@@ -1,0 +1,102 @@
+# server配置
+server:
+  port: 5050
+  servlet:
+    context-path: /api
+    session:
+      timeout: PT60M  #session过期时间 60M 一小时
+
+# websocket端口
+ws:
+  port: 5051
+
+# logback
+log:
+  root:
+    # 日志级别
+    level: debug
+# 数据存储位置
+project:
+  folder: D:/MyChat
+
+# 超级管理员id
+admin:
+  emails: admin.qq.com,xiaowang@qq.com
+
+# 是否开发环境
+dev: false
+
+# 常量
+contants:
+  REDIS_KEY_CHECK_CODE: "myChat:checkCode:"
+  REDIS_KEY_USER_HEARTBEAT: "myChat:user:heartbeat:"
+  REDIS_KEY_USER_TOKEN: "myChat:user:token:"
+  REDIS_KEY_USER_TOKEN_USERID: "myChat:user:token:userid:"
+  REDIS_KEY_SYS_SETTING: "myChat:sys:setting:"
+  REDIS_TIME_1MIN: 60
+  REDIS_TIME_1HOUR: 3600
+  REDIS_TIME_1Day: 86400
+  LENGTH_20: 20
+  ROBOT_UID: "Urobot"
+
+
+spring:
+  web:
+    resources:
+      # 禁用静态资源的自动映射
+      add-mappings: false
+  mvc:
+    # 当请求的handler不存在时，直接抛异常
+    throw-exception-if-no-handler-found: true
+  servlet:
+    multipart:
+      # 限制上传文件大小
+      max-file-size: 15MB
+      max-request-size: 15MB
+
+  datasource:
+    druid:
+      url: jdbc:mysql:///mychat?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&autoReconnect=true&allowMultiQueries=true&useSSL=false
+      username: root
+      password: Sa123456
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    # hikari连接池配置
+    hikari:
+      pool-name: HikariCPDatasource
+      minimum-idle: 5
+      idle-timeout: 180000
+      maximum-pool-size: 10
+      auto-commit: true
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+  data:
+    # redis配置
+    redis:
+      database: 0
+      host: 8.219.153.190
+      port: 6379
+      password: Sa123456
+      jedis:
+        pool:
+          # 连接池最大连接数（负值表示无限制）
+          max-active: 20
+          # 连接池最大阻塞等待时间（负值表示无限制）
+          max-wait: -1
+          # 连接池中最大空闲连接
+          max-idle: 10
+          # 连接池中最小空闲连接
+          min-idle: 0
+      # 连接超时时间（毫秒）
+      timeout: 2000
+
+
+# mybatis-plus的配置
+#mybatis-plus:
+#  type-aliases-package: com.mychat.pojo
+#  global-config:
+#    db-config:
+#      logic-delete-field: isDeleted  #全局逻辑删除
+#      id-type: auto #主键策略自增长
+#      table-prefix: news_ # 设置表的前缀

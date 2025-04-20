@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mychat.mapper.UserInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.mychat.entity.po.UserInfo">
+            <id property="userId" column="user_id" />
+            <result property="email" column="email" />
+            <result property="nickName" column="nick_name" />
+            <result property="joinType" column="join_type" />
+            <result property="sex" column="sex" />
+            <result property="password" column="password" />
+            <result property="personalSignature" column="personal_signature" />
+            <result property="status" column="status" />
+            <result property="createTime" column="create_time" />
+            <result property="lastLoginTime" column="last_login_time" />
+            <result property="areaName" column="area_name" />
+            <result property="areaCode" column="area_code" />
+            <result property="lastOffTime" column="last_off_time" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id,email,nick_name,join_type,sex,password,
+        personal_signature,status,create_time,last_login_time,area_name,
+        area_code,last_off_time
+    </sql>
+</mapper>

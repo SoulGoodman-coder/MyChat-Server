@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mychat.mapper.GroupInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.mychat.entity.po.GroupInfo">
+            <id property="groupId" column="group_id" />
+            <result property="groupName" column="group_name" />
+            <result property="groupOwnerId" column="group_owner_id" />
+            <result property="createTime" column="create_time" />
+            <result property="groupNotice" column="group_notice" />
+            <result property="joinType" column="join_type" />
+            <result property="status" column="status" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        group_id,group_name,group_owner_id,create_time,group_notice,join_type,
+        status
+    </sql>
+</mapper>

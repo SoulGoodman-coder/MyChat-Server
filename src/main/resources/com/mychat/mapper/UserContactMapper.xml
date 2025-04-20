@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mychat.mapper.UserContactMapper">
+
+    <resultMap id="BaseResultMap" type="com.mychat.entity.po.UserContact">
+            <id property="userId" column="user_id" />
+            <id property="contactId" column="contact_id" />
+            <result property="contactType" column="contact_type" />
+            <result property="createTime" column="create_time" />
+            <result property="status" column="status" />
+            <result property="lastUpdateTime" column="last_update_time" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id,contact_id,contact_type,create_time,status,last_update_time
+    </sql>
+</mapper>
