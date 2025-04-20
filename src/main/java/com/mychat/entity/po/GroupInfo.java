@@ -13,6 +13,7 @@ import lombok.Data;
 @TableName(value ="group_info")
 @Data
 public class GroupInfo {
+    @TableId
     private String groupId;
 
     private String groupName;

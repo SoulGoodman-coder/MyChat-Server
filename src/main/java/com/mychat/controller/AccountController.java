@@ -1,5 +1,6 @@
 package com.mychat.controller;
 
+import com.mychat.annotation.GlobalInterceptor;
 import com.mychat.entity.po.UserInfo;
 import com.mychat.entity.vo.UserInfoVo;
 import com.mychat.exception.BusinessException;
@@ -107,6 +108,7 @@ public class AccountController {
 
     // 获取系统的设置
     @PostMapping("getSysSetting")
+    @GlobalInterceptor
     public Result getSysSetting() {
        return Result.ok(redisComponent.getSysSettingDto());
     }

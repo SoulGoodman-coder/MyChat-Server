@@ -18,7 +18,7 @@ import com.mychat.utils.StringUtils;
 import com.mychat.utils.enums.BeautyAccountStatusEnum;
 import com.mychat.utils.enums.JoinTypeEnum;
 import com.mychat.utils.enums.UserStatusEnum;
-import com.mychat.utils.enums.UserTypeEnum;
+import com.mychat.utils.enums.UserContactTypeEnum;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -77,7 +77,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         Boolean isUseBeautyAccount = null != beautyAccount && beautyAccount.getStatus().equals(BeautyAccountStatusEnum.NO_USE.getStatus());
 
         if (isUseBeautyAccount){
-            userId = UserTypeEnum.USER.getPrefix() + beautyAccount.getUserId();
+            userId = UserContactTypeEnum.USER.getPrefix() + beautyAccount.getUserId();
         }
 
         // 当前时间

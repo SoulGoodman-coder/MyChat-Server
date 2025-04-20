@@ -1,10 +1,8 @@
 package com.mychat.utils;
 
-import com.mychat.utils.enums.UserTypeEnum;
+import com.mychat.utils.enums.UserContactTypeEnum;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -36,10 +34,18 @@ public class StringUtils {
 
     /**
      * 生成userId
-     * @return
+     * @return  U + 11位随机数
      */
     public static String getUserId(){
-        return UserTypeEnum.USER.getPrefix() + getRandomNumber(11);
+        return UserContactTypeEnum.USER.getPrefix() + getRandomNumber(11);
+    }
+
+    /**
+     * 生成getGroupId
+     * @return  G + 11位随机数
+     */
+    public static String getGroupId(){
+        return UserContactTypeEnum.GROUP.getPrefix() + getRandomNumber(11);
     }
 
     public static String getRandomNumber(int length) {

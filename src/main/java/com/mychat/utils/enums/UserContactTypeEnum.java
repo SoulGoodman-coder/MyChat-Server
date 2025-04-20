@@ -4,7 +4,7 @@ import com.mychat.utils.StringUtils;
 import lombok.Getter;
 
 @Getter
-public enum UserTypeEnum {
+public enum UserContactTypeEnum {
     USER(0, "U", "好友"),
     GROUP(1, "G", "群");
 
@@ -12,7 +12,7 @@ public enum UserTypeEnum {
     private String prefix;
     private String desc;
 
-    UserTypeEnum(Integer type, String prefix, String desc) {
+    UserContactTypeEnum(Integer type, String prefix, String desc) {
         this.type = type;
         this.prefix = prefix;
         this.desc = desc;
@@ -23,12 +23,12 @@ public enum UserTypeEnum {
      * @param name      name
      * @return          UserTypeEnum
      */
-    public static UserTypeEnum getByName(String name) {
+    public static UserContactTypeEnum getByName(String name) {
         try {
             if(StringUtils.isEmpty(name)){
                 return null;
             }
-            return UserTypeEnum.valueOf(name.toUpperCase());
+            return UserContactTypeEnum.valueOf(name.toUpperCase());
         }catch (Exception e){
             return null;
         }
@@ -39,14 +39,14 @@ public enum UserTypeEnum {
      * @param id    id
      * @return      UserTypeEnum
      */
-    public static UserTypeEnum getByPrefix(String id) {
+    public static UserContactTypeEnum getByPrefix(String id) {
         try {
             if(StringUtils.isEmpty(id)){
                 return null;
             }
             // 从id中解析标识
             String prefix = id.substring(0, 1);
-            for (UserTypeEnum typeEnum : UserTypeEnum.values()) {
+            for (UserContactTypeEnum typeEnum : UserContactTypeEnum.values()) {
                 if (typeEnum.prefix.equals(prefix)) {
                     return typeEnum;
                 }
