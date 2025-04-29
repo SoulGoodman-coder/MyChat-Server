@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 /**
  * projectName: com.mychat.annotation
  * author:  SoulGoodman-coder
- * description: 前置拦截注解（未登录拦截）
+ * description: 前置拦截注解（未登录、admin拦截）
  */
 
 @Target(ElementType.METHOD)

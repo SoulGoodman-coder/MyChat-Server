@@ -47,9 +47,9 @@ public class RedisComponent {
      */
     public void saveTokenUserInfoDto(TokenUserInfoDto tokenUserInfoDto) {
         // token: tokenUserInfoDto
-        redisUtils.set(REDIS_KEY_USER_TOKEN + tokenUserInfoDto.getToken(), tokenUserInfoDto, REDIS_TIME_1Day*2);
+        redisUtils.set(REDIS_KEY_USER_TOKEN + tokenUserInfoDto.getToken(), tokenUserInfoDto, REDIS_TIME_1Day*3);
         // userid: token
-        redisUtils.set(REDIS_KEY_USER_TOKEN_USERID + tokenUserInfoDto.getUserId(), tokenUserInfoDto.getToken(), REDIS_TIME_1Day*2);
+        redisUtils.set(REDIS_KEY_USER_TOKEN_USERID + tokenUserInfoDto.getUserId(), tokenUserInfoDto.getToken(), REDIS_TIME_1Day*3);
     }
 
     public SysSettingDto getSysSettingDto() {

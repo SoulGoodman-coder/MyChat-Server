@@ -19,4 +19,22 @@
         apply_id,apply_user_id,receive_user_id,contact_type,contact_id,last_apply_time,
         status,apply_info
     </sql>
+
+    <select id="loadApply" resultType="com.mychat.entity.po.UserContactApply">
+        SELECT
+            a.*,
+            CASE a.contact_type
+                WHEN 0 THEN
+                    u.nick_name
+                WHEN 1 THEN
+                    g.group_name
+                END as contactName
+        FROM
+            user_contact_apply a
+                LEFT JOIN user_info u on a.contact_id = u.user_id
+                LEFT JOIN group_info g on a.contact_id = g.group_id
+        WHERE
+            a.receive_user_id = #{receiveUserId}
+        ORDER BY last_apply_time DESC
+    </select>
 </mapper>

@@ -27,7 +27,7 @@ public class InitRun implements ApplicationRunner {
     private RedisUtils redisUtils;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         try {
             dataSource.getConnection();
             redisUtils.get("test");
@@ -39,8 +39,5 @@ public class InitRun implements ApplicationRunner {
         }catch (Exception e){
             log.error("服务启动失败", e);
         }
-
-
-
     }
 }

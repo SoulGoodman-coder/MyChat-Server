@@ -12,6 +12,7 @@ import lombok.Data;
 @TableName(value ="user_contact_apply")
 @Data
 public class UserContactApply {
+    @TableId
     private Integer applyId;
 
     private String applyUserId;
@@ -27,4 +28,7 @@ public class UserContactApply {
     private Integer status;
 
     private String applyInfo;
+
+    @TableField(exist = false)
+    private String contactName; // 申请对象名（用户名或群聊名）
 }

@@ -42,6 +42,7 @@ contants:
   FILE_FOLDER_AVATAR_NAME: "avatar/"
   PNG_SUFFIX: ".png"
   COVER_PNG_SUFFIX: "_cover.png"
+  APPLY_INFO_TEMPLATE: "我是%s"
 
 
 spring:

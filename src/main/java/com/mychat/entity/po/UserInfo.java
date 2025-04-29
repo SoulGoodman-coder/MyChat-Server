@@ -1,5 +1,6 @@
 package com.mychat.entity.po;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.Data;
 @TableName(value ="user_info")
 @Data
 public class UserInfo {
+    @TableId
     private String userId;
 
     private String email;

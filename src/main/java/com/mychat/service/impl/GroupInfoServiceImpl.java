@@ -12,6 +12,7 @@ import com.mychat.redis.RedisComponent;
 import com.mychat.service.GroupInfoService;
 import com.mychat.mapper.GroupInfoMapper;
 import com.mychat.utils.StringUtils;
+import com.mychat.utils.enums.GroupStatusEnum;
 import com.mychat.utils.enums.ResultCodeEnum;
 import com.mychat.utils.enums.UserContactStatusEnum;
 import com.mychat.utils.enums.UserContactTypeEnum;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 /**
 * @author Administrator
@@ -145,6 +147,75 @@ public class GroupInfoServiceImpl extends ServiceImpl<GroupInfoMapper, GroupInfo
 
         avatarFile.transferTo(new File(filePath));
         avatarCover.transferTo(new File(filePath + COVER_PNG_SUFFIX));
+    }
+
+    /**
+     * 获取我创建的群组
+     *
+     * @param userId 用户id
+     * @return List<GroupInfo>
+     */
+    @Override
+    public List<GroupInfo> loadMyGroup(String userId) {
+        LambdaQueryWrapper<GroupInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(GroupInfo::getGroupOwnerId, userId);
+        queryWrapper.orderByDesc(GroupInfo::getCreateTime);
+
+        return groupInfoMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * 获取群聊详情
+     *
+     * @param userId  当前用户id
+     * @param groupId 群组id
+     */
+    @Override
+    public GroupInfo getGroupInfo(String userId, String groupId) {
+        // 判断当前用户是否在群组中（即群组是否是用户联系人）
+        LambdaQueryWrapper<UserContact> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserContact::getUserId, userId)
+                    .eq(UserContact::getContactId, groupId);
+        UserContact userContact = userContactMapper.selectOne(queryWrapper);
+        if (null == userContact|| !UserContactStatusEnum.FRIEND.getStatus().equals(userContact.getStatus())){
+            throw new BusinessException("你不在当前群聊中，或群聊不存在已解散");
+        }
+
+        // 查询GroupInfo
+        LambdaQueryWrapper<GroupInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(GroupInfo::getGroupId, groupId);
+        GroupInfo groupInfo = groupInfoMapper.selectOne(wrapper);
+
+        // 校验GroupInfo
+        if (null == groupInfo || !GroupStatusEnum.NORMAL.getStatus().equals(groupInfo.getStatus())){
+            throw new BusinessException("当前群聊不存在或已解散");
+        }
+
+        return groupInfo;
+    }
+
+    /**
+     * 获取群人数
+     *
+     * @param groupId 群组id
+     * @return 群人数
+     */
+    @Override
+    public Integer getGroupMemberCount(String groupId) {
+        LambdaQueryWrapper<UserContact> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserContact::getContactId, groupId);
+        return Math.toIntExact(userContactMapper.selectCount(queryWrapper));
+    }
+
+    /**
+     * 获取群成员列表
+     *
+     * @param groupId 群组id
+     * @return 群成员列表
+     */
+    @Override
+    public List<UserContact> getGroupUserContactList(String groupId) {
+        return userContactMapper.getGroupUserContactList(groupId);
     }
 }
 

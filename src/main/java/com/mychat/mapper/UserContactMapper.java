@@ -2,6 +2,9 @@ package com.mychat.mapper;
 
 import com.mychat.entity.po.UserContact;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author Administrator
@@ -10,7 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.mychat.entity.po.UserContact
 */
 public interface UserContactMapper extends BaseMapper<UserContact> {
-
+    List<UserContact> getGroupUserContactList(@Param("groupId") String groupId);
 }
 
 

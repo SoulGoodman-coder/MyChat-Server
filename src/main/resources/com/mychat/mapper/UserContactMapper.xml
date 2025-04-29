@@ -16,4 +16,15 @@
     <sql id="Base_Column_List">
         user_id,contact_id,contact_type,create_time,status,last_update_time
     </sql>
+
+    <select id="getGroupUserContactList" resultType="com.mychat.entity.po.UserContact">
+        select
+            c.*, u.nick_name contactName, u.sex sex
+        from
+            user_contact c JOIN user_info u on c.user_id = u.user_id
+        where
+            c.contact_id = #{groupId}
+        order by
+            c.create_time
+    </select>
 </mapper>

@@ -63,6 +63,13 @@
             <version>${mybatisplus.version}</version>
         </dependency>
 
+        <!-- 分页插件 PaginationInnerInterceptor，版本号需要跟mybatis-plus一致-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
+            <version>${mybatisplus.version}</version>
+        </dependency>
+
         <!-- 数据库相关配置启动器 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

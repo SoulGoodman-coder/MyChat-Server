@@ -2,7 +2,6 @@ package com.mychat.entity.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-
 import java.io.Serial;
 import java.io.Serializable;
 

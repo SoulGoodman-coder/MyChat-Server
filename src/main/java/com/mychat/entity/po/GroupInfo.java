@@ -24,7 +24,13 @@ public class GroupInfo {
 
     private String groupNotice;
 
+    // 加群方式  0：直接加入  1：管理员同意加入
     private Integer joinType;
 
+    // 群状态  1：正常  0：解散
     private Integer status;
+
+    // 群人数
+    @TableField(exist = false)
+    private Integer memberCount;
 }

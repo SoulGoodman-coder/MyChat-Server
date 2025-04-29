@@ -1,7 +1,9 @@
 package com.mychat.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mychat.entity.po.UserContactApply;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author Administrator
@@ -11,6 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface UserContactApplyMapper extends BaseMapper<UserContactApply> {
 
+    IPage<UserContactApply> loadApply(IPage<UserContactApply> page, @Param("receiveUserId") String receiveUserId);
 }
 
 

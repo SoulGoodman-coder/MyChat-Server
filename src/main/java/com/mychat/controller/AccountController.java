@@ -1,13 +1,11 @@
 package com.mychat.controller;
 
 import com.mychat.annotation.GlobalInterceptor;
-import com.mychat.entity.po.UserInfo;
 import com.mychat.entity.vo.UserInfoVo;
 import com.mychat.exception.BusinessException;
 import com.mychat.redis.RedisComponent;
 import com.mychat.redis.RedisUtils;
 import com.mychat.service.UserInfoService;
-import com.mychat.utils.CopyUtils;
 import com.mychat.utils.Result;
 import com.wf.captcha.SpecCaptcha;
 import jakarta.annotation.Resource;
