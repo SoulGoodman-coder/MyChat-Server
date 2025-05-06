@@ -13,7 +13,14 @@ import java.util.List;
 * @Entity com.mychat.entity.po.UserContact
 */
 public interface UserContactMapper extends BaseMapper<UserContact> {
+    // 获取群成员列表
     List<UserContact> getGroupUserContactList(@Param("groupId") String groupId);
+
+    // 获取联系人（好友）
+    List<UserContact> getUserContectList(@Param("userId") String userId);
+
+    // 获取联系人（群组）（过滤自己创建的群组，只展示加入的群组）
+    List<UserContact> getGroupContactList(@Param("userId") String userId);
 }
 
 

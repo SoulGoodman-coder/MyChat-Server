@@ -17,6 +17,7 @@
         user_id,contact_id,contact_type,create_time,status,last_update_time
     </sql>
 
+    <!-- 获取群成员列表 -->
     <select id="getGroupUserContactList" resultType="com.mychat.entity.po.UserContact">
         select
             c.*, u.nick_name contactName, u.sex sex
@@ -26,5 +27,38 @@
             c.contact_id = #{groupId}
         order by
             c.create_time
+    </select>
+
+    <!-- 获取联系人（好友） -->
+    <select id="getUserContectList" resultType="com.mychat.entity.po.UserContact">
+        SELECT
+            c.*,
+            u.nick_name contactName
+        FROM
+            user_contact c
+                JOIN user_info u ON c.contact_id = u.user_id
+        WHERE
+            c.user_id = #{userId}
+          AND c.contact_type = 0
+          AND c.`status` IN (1,3,6)
+        ORDER BY
+            c.last_update_time DESC
+    </select>
+
+    <!-- 获取联系人（群组）（过滤自己创建的群组，只展示加入的群组） -->
+    <select id="getGroupContactList" resultType="com.mychat.entity.po.UserContact">
+        SELECT
+            c.*,
+            g.group_name contactName
+        FROM
+            user_contact c
+                JOIN group_info g ON c.contact_id = g.group_id
+        WHERE
+            c.user_id = #{userId}
+          AND c.contact_type = 1
+          AND g.group_owner_id != c.user_id
+          AND c.`status` IN (1,3,6)
+        ORDER BY
+            c.last_update_time DESC
     </select>
 </mapper>

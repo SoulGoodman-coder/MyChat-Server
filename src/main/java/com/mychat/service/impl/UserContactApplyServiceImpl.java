@@ -1,15 +1,14 @@
 package com.mychat.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mychat.entity.po.UserContact;
 import com.mychat.entity.po.UserContactApply;
 import com.mychat.exception.BusinessException;
-import com.mychat.mapper.UserContactMapper;
 import com.mychat.service.UserContactApplyService;
 import com.mychat.mapper.UserContactApplyMapper;
+import com.mychat.service.UserContactService;
 import com.mychat.utils.enums.ResultCodeEnum;
 import com.mychat.utils.enums.UserContactApplyStatusEnum;
 import com.mychat.utils.enums.UserContactStatusEnum;
@@ -33,7 +32,7 @@ public class UserContactApplyServiceImpl extends ServiceImpl<UserContactApplyMap
     private UserContactApplyMapper userContactApplyMapper;
 
     @Resource
-    private UserContactMapper userContactMapper;
+    private UserContactService userContactService;
 
     /**
      * 获取好友申请列表
@@ -97,12 +96,13 @@ public class UserContactApplyServiceImpl extends ServiceImpl<UserContactApplyMap
 
         // 同意申请
         if (UserContactApplyStatusEnum.PASS == statusEnum){
-            // TODO 添加联系人
+            // 添加联系人
+            userContactService.addContact(userContactApply.getApplyUserId(), userContactApply.getReceiveUserId(), userContactApply.getContactId(), userContactApply.getContactType(), userContactApply.getApplyInfo());
 
             return;
         }
 
-        // 拒接申请只需要更新状态，不需要其他操作
+        // 拒接申请：只需要更新状态，不需要其他操作
 
         // 拉黑申请
         if (UserContactApplyStatusEnum.BLICKLIST == statusEnum){
@@ -112,30 +112,32 @@ public class UserContactApplyServiceImpl extends ServiceImpl<UserContactApplyMap
             userContact.setUserId(userContactApply.getApplyUserId());   // 发出申请的人id
             userContact.setContactId(userContactApply.getContactId());  // 被申请的用户|群组id
             userContact.setContactType(userContactApply.getContactType());
-            userContact.setStatus(UserContactStatusEnum.BLACKLIST_BE.getStatus());
-            userContact.setLastUpdateTime(curDate);
+            userContact.setStatus(UserContactStatusEnum.BLACKLIST_BE_BEFORE.getStatus());
+            // userContact.setLastUpdateTime(curDate);
 
             // 判断user_contact表中是否已经存在该条好友记录。存在则更新，不存在则插入
-            LambdaQueryWrapper<UserContact> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(UserContact::getUserId, userContactApply.getApplyUserId())
-                        .eq(UserContact::getContactId, userContactApply.getContactId());
-            UserContact selectedUserContact = userContactMapper.selectOne(queryWrapper);
+            // LambdaQueryWrapper<UserContact> queryWrapper = new LambdaQueryWrapper<>();
+            // queryWrapper.eq(UserContact::getUserId, userContact.getUserId())
+            //             .eq(UserContact::getContactId, userContact.getContactId());
+            // UserContact selectedUserContact = userContactMapper.selectOne(queryWrapper);
+            //
+            // if (null == selectedUserContact) {
+            //     userContact.setCreateTime(curDate);
+            //     userContactMapper.insert(userContact);
+            // }else {
+            //     LambdaUpdateWrapper<UserContact> wrapper = new LambdaUpdateWrapper<>();
+            //     wrapper.eq(UserContact::getUserId, userContactApply.getApplyUserId())
+            //            .eq(UserContact::getContactId, userContactApply.getContactId());
+            //     userContactMapper.update(userContact, wrapper);
+            // }
 
-            if (null == selectedUserContact) {
-                userContact.setCreateTime(curDate);
-                userContactMapper.insert(userContact);
-            }else {
-                LambdaUpdateWrapper<UserContact> wrapper = new LambdaUpdateWrapper<>();
-                wrapper.eq(UserContact::getUserId, userContactApply.getApplyUserId())
-                       .eq(UserContact::getContactId, userContactApply.getContactId());
-                userContactMapper.update(userContact, wrapper);
-            }
-
-
+            userContactService.insertOrUpdateContact(userContact);
             return;
         }
 
     }
+
+
 }
 
 

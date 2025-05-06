@@ -37,6 +37,6 @@ public class UserInfoVo implements Serializable {
 
     private Boolean admin;
 
-    // TODO contactStatus
+    // 与联系人的状态  0:非好友 1:好友 2:已删除好友 3:被好友删除 4:已拉黑好友 5:加好友时被好友拉黑 6:加好友后被好友拉黑
     private Integer contactStatus;
 }

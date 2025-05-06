@@ -1,5 +1,6 @@
 package com.mychat.service;
 
+import com.mychat.entity.po.UserContact;
 import com.mychat.entity.po.UserContactApply;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -27,4 +28,5 @@ public interface UserContactApplyService extends IService<UserContactApply> {
      * @param status        申请结果：0:待处理、1:同意、2:拒绝、3:拉黑
      */
     void dealWithApply(String userId, String applyId, Integer status);
+
 }

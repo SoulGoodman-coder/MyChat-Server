@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * projectName: com.mychat.controller
  * author:  SoulGoodman-coder
- * description: 群聊相关controller
+ * description: 群聊信息相关controller
  */
 
 @RestController("groupInfoController")

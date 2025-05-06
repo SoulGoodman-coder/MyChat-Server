@@ -16,8 +16,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName(value ="user_contact")
 @Data
 public class UserContact {
+    // 用户id
     private String userId;
 
+    // 联系人id/群组id
     private String contactId;
 
     // 联系人类型 0：好友 1：群组

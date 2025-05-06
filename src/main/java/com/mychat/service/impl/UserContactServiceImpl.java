@@ -1,26 +1,35 @@
 package com.mychat.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.mychat.entity.dto.SysSettingDto;
 import com.mychat.entity.dto.TokenUserInfoDto;
 import com.mychat.entity.dto.UserContactSearchDto;
 import com.mychat.entity.po.GroupInfo;
 import com.mychat.entity.po.UserContact;
 import com.mychat.entity.po.UserContactApply;
 import com.mychat.entity.po.UserInfo;
+import com.mychat.entity.vo.UserInfoVo;
 import com.mychat.exception.BusinessException;
 import com.mychat.mapper.GroupInfoMapper;
 import com.mychat.mapper.UserContactApplyMapper;
 import com.mychat.mapper.UserInfoMapper;
+import com.mychat.redis.RedisComponent;
 import com.mychat.service.UserContactService;
 import com.mychat.mapper.UserContactMapper;
 import com.mychat.utils.CopyUtils;
 import com.mychat.utils.StringUtils;
 import com.mychat.utils.enums.*;
 import jakarta.annotation.Resource;
+import jodd.util.ArraysUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
 * @author Administrator
@@ -45,6 +54,9 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
 
     @Value("${contants.APPLY_INFO_TEMPLATE}")
     private String APPLY_INFO_TEMPLATE;
+
+    @Resource
+    private RedisComponent redisComponent;
 
     /**
      * 搜索好友、群组
@@ -131,7 +143,9 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
         queryWrapper.eq(UserContact::getContactId, contactId)
                 .eq(UserContact::getUserId, applyUserId);
         UserContact userContact = userContactMapper.selectOne(queryWrapper);
-        if (null != userContact && UserContactStatusEnum.BLACKLIST_BE.getStatus().equals(userContact.getStatus())) {
+        if (null != userContact &&
+                (UserContactStatusEnum.BLACKLIST_BE_BEFORE.getStatus().equals(userContact.getStatus()) || UserContactStatusEnum.BLACKLIST_BE_AFTER.getStatus().equals(userContact.getStatus()))
+        ) {
             throw new BusinessException("对方已将你拉黑，无法添加");
         }
 
@@ -157,8 +171,7 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
 
         // joinType为直接加入，不用发申请，直接加好友
         if (JoinTypeEnum.JOIN.getType().equals(joinType)){
-            // TODO 加为联系人
-
+            this.addContact(applyUserId, receiveUserId, contactId, typeEnum.getType(), applyInfo);
             return joinType;
         }
 
@@ -196,6 +209,204 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
         }
 
         return joinType;
+    }
+
+    /**
+     * 添加联系人
+     *
+     * @param applyUserId   申请人id
+     * @param receiveUserId 接收人id
+     * @param contactId     联系人或群组id
+     * @param contactType   联系人类型 0：好友 1：群组
+     * @param applyInfo     申请信息
+     */
+    @Override
+    public void addContact(String applyUserId, String receiveUserId, String contactId, Integer contactType, String applyInfo) {
+        // 判断群聊人数是否超出
+        if (UserContactTypeEnum.GROUP.getType().equals(contactType)){
+            LambdaQueryWrapper<UserContact> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(UserContact::getContactId, contactId)
+                    .eq(UserContact::getStatus, UserContactStatusEnum.FRIEND.getStatus());
+            Long count = userContactMapper.selectCount(queryWrapper);
+            SysSettingDto sysSettingDto = redisComponent.getSysSettingDto();
+            if (count >= sysSettingDto.getMaxGroupMemberCount()) {
+                throw new BusinessException("群聊" + contactId + "成员已满，无法加入");
+            }
+        }
+
+        Date curDate = new Date();
+        ArrayList<UserContact> contactList = new ArrayList<>();
+
+        // 申请人添加接收人为好友
+        UserContact userContact = new UserContact();
+        userContact.setUserId(applyUserId);
+        userContact.setContactId(contactId);
+        userContact.setContactType(contactType);
+        userContact.setCreateTime(curDate);
+        userContact.setLastUpdateTime(curDate);
+        userContact.setStatus(UserContactStatusEnum.FRIEND.getStatus());
+        contactList.add(userContact);
+
+        // 接收人添加申请人为好友（群组则接收人无需添加申请人为好友）
+        if (UserContactTypeEnum.USER.getType().equals(contactType)){
+            userContact = new UserContact();
+            userContact.setUserId(contactId);
+            userContact.setContactId(applyUserId);
+            userContact.setContactType(contactType);
+            // userContact.setCreateTime(curDate);
+            // userContact.setLastUpdateTime(curDate);
+            userContact.setStatus(UserContactStatusEnum.FRIEND.getStatus());
+            contactList.add(userContact);
+        }
+
+        // 批量插入
+        this.insertOrUpdateContactList(contactList);
+
+        // TODO 添加缓存
+
+        // TODO 创建会话 发送消息
+    }
+
+    /**
+     * 根据userId和contactId插入或更新
+     *
+     * @param userContact UserContact
+     */
+    @Override
+    public void insertOrUpdateContact(UserContact userContact) {
+        Date curDate = new Date();
+        userContact.setLastUpdateTime(curDate);
+
+        // 判断user_contact表中是否已经存在该条好友记录。存在则更新，不存在则插入
+        LambdaQueryWrapper<UserContact> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserContact::getUserId, userContact.getUserId())
+                .eq(UserContact::getContactId, userContact.getContactId());
+        UserContact selectedUserContact = userContactMapper.selectOne(queryWrapper);
+
+        if (null == selectedUserContact) {
+            userContact.setCreateTime(curDate);
+            userContactMapper.insert(userContact);
+        }else {
+            LambdaUpdateWrapper<UserContact> wrapper = new LambdaUpdateWrapper<>();
+            wrapper.eq(UserContact::getUserId, userContact.getUserId())
+                    .eq(UserContact::getContactId, userContact.getContactId());
+            userContactMapper.update(userContact, wrapper);
+        }
+    }
+
+    /**
+     * 根据userId和contactId批量插入或更新
+     *
+     * @param userContactList List<UserContact>
+     */
+    @Override
+    public void insertOrUpdateContactList(List<UserContact> userContactList) {
+        userContactList.forEach(this::insertOrUpdateContact);
+    }
+
+    /**
+     * 查询当前用户的联系人列表（好友/群组）
+     *
+     * @param userId 当前用户id
+     * @param contactTypeEnum   联系人类型Enum
+     * @return List<UserContact>
+     */
+    @Override
+    public List<UserContact> loadContact(String userId, UserContactTypeEnum contactTypeEnum) {
+        // 判断联系人类型
+        if (UserContactTypeEnum.USER == contactTypeEnum){
+            return userContactMapper.getUserContectList(userId);
+        } else if (UserContactTypeEnum.GROUP == contactTypeEnum) {
+            return userContactMapper.getGroupContactList(userId);
+        }
+        return null;
+    }
+
+    /**
+     * 获取联系人详情（可查询非好友）
+     *
+     * @param userId    当前用户id
+     * @param contactId 联系人id
+     * @return UserInfoVo
+     */
+    @Override
+    public UserInfoVo getContactInfo(String userId, String contactId) {
+        // 根据id查询用户信息，拷贝到UserInfoVo对象中
+        UserInfo userInfo = userInfoMapper.selectById(contactId);
+        UserInfoVo userInfoVo = CopyUtils.copy(userInfo, UserInfoVo.class);
+
+        userInfoVo.setContactStatus(UserContactStatusEnum.NOT_FRIEND.getStatus());
+
+        // 判断要查询的联系人与当前用户是否是好友
+        LambdaQueryWrapper<UserContact> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserContact::getUserId, userId)
+                    .eq(UserContact::getContactId, contactId);
+        UserContact userContact = userContactMapper.selectOne(queryWrapper);
+        if (null != userContact){
+            userInfoVo.setContactStatus(UserContactStatusEnum.FRIEND.getStatus());
+        }
+
+        return userInfoVo;
+    }
+
+    /**
+     * 获取联系人详情（仅查询好友）
+     *
+     * @param userId    当前用户id
+     * @param contactId 联系人id
+     * @return UserInfoVo
+     */
+    @Override
+    public UserInfoVo getContactUserInfo(String userId, String contactId) {
+        // 判断要查询的联系人与当前用户是否是好友
+        LambdaQueryWrapper<UserContact> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserContact::getUserId, userId)
+                .eq(UserContact::getContactId, contactId);
+        UserContact userContact = userContactMapper.selectOne(queryWrapper);
+        // 非好友，或联系人状态异常
+        if (null == userContact ||
+                !ArraysUtil.contains(new Integer[]{
+                        UserContactStatusEnum.FRIEND.getStatus(),
+                        UserContactStatusEnum.DEL_BE.getStatus(),
+                        UserContactStatusEnum.BLACKLIST_BE_AFTER.getStatus()
+                }, userContact.getStatus())){
+            throw new BusinessException(ResultCodeEnum.CODE_600);
+        }
+        UserInfo userInfo = userInfoMapper.selectById(contactId);
+        return CopyUtils.copy(userInfo, UserInfoVo.class);
+    }
+
+    /**
+     * 拉黑或删除好友
+     *
+     * @param userId     当前用户id
+     * @param contactId  要拉黑或删除的用户id
+     * @param statusEnum 标识要执行的操作（拉黑/删除）
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeUserContact(String userId, String contactId, UserContactStatusEnum statusEnum) {
+        // 在自己的好友列表中移除对方
+        LambdaUpdateWrapper<UserContact> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(UserContact::getUserId, userId)
+                     .eq(UserContact::getContactId, contactId)
+                     .set(UserContact::getStatus, statusEnum.getStatus());
+        userContactMapper.update(updateWrapper);
+
+        // 在对方的好友列表中移除自己
+        updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(UserContact::getUserId, contactId)
+                .eq(UserContact::getContactId, userId);
+        if (UserContactStatusEnum.DEL == statusEnum){
+            updateWrapper.set(UserContact::getStatus, UserContactStatusEnum.DEL_BE.getStatus());
+        } else if (UserContactStatusEnum.BLACKLIST == statusEnum) {
+            updateWrapper.set(UserContact::getStatus, UserContactStatusEnum.BLACKLIST_BE_AFTER.getStatus());
+        }
+        userContactMapper.update(updateWrapper);
+
+        // TODO 从我的好友列表缓存中删除对方
+
+        // TODO 从对方的好友列表缓存中删除我
     }
 }
 
