@@ -50,4 +50,22 @@ public interface GroupInfoService extends IService<GroupInfo> {
      * @return          群成员列表
      */
     List<UserContact> getGroupUserContactList(String groupId);
+
+    /**
+     * 获取群组列表
+     * @param groupId           群组id
+     * @param groupNameFuzzy    群组名称（支持模糊搜索）
+     * @param groupOwnerId      群主id
+     * @param pageNumber        页码
+     * @param pageSize          页容量
+     * @return List<GroupInfo>
+     */
+    List<GroupInfo> loadGroupList(String groupId, String groupNameFuzzy, String groupOwnerId, Integer pageNumber, Integer pageSize);
+
+    /**
+     * 解散群组
+     * @param userId            当前用户id
+     * @param groupId           要紧解散的群组id
+     */
+    void dissolutionGroup(String userId, String groupId);
 }

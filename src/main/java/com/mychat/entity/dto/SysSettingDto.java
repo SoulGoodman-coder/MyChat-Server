@@ -31,8 +31,7 @@ public class SysSettingDto implements Serializable {
     // 其他文件大小（MB）
     private Integer maxFileSize = 10;
     // 机器人uid
-    @Value("${contants.ROBOT_UID}")
-    private String robotUid;
+    private String robotUid = "Urobot";
     // 机器人昵称
     private String robotNickName = "MyChat";
     // 机器人欢迎消息

@@ -1,7 +1,10 @@
 package com.mychat.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mychat.entity.po.UserInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author Administrator
@@ -11,6 +14,15 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface UserInfoMapper extends BaseMapper<UserInfo> {
 
+    // TODO 在select中去除不需要的敏感信息 password等
+    /**
+     * 获取用户列表
+     * @param page          IPage接口实现对象
+     * @param userId        用户id
+     * @param nickNameFuzzy 用户昵称（支持模糊搜索）
+     * @return IPage<UserInfo>
+     */
+    IPage<UserInfo> loadUser(Page<UserInfo> page, @Param("userId") String userId, @Param("nickNameFuzzy") String nickNameFuzzy);
 }
 
 

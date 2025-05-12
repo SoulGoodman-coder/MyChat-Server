@@ -32,15 +32,17 @@ contants:
   REDIS_KEY_USER_HEARTBEAT: "myChat:user:heartbeat:"
   REDIS_KEY_USER_TOKEN: "myChat:user:token:"
   REDIS_KEY_USER_TOKEN_USERID: "myChat:user:token:userid:"
-  REDIS_KEY_SYS_SETTING: "myChat:sys:setting:"
+  REDIS_KEY_SYS_SETTING: "myChat:sys:setting"
   REDIS_TIME_1MIN: 60
   REDIS_TIME_1HOUR: 3600
   REDIS_TIME_1Day: 86400
   LENGTH_20: 20
-  ROBOT_UID: "Urobot"
+  APP_NAME: "MyChatSetup"
   FILE_FOLDER_FILE: "file/"
+  FILE_FOLDER_APP: "app/"
   FILE_FOLDER_AVATAR_NAME: "avatar/"
   PNG_SUFFIX: ".png"
+  EXE_SUFFIX: ".exe"
   COVER_PNG_SUFFIX: "_cover.png"
   APPLY_INFO_TEMPLATE: "我是%s"
 

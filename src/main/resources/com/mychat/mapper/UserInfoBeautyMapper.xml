@@ -14,4 +14,19 @@
     <sql id="Base_Column_List">
         id,email,user_id,status
     </sql>
+
+    <select id="loadBeautyAccountList" resultType="com.mychat.entity.po.UserInfoBeauty">
+        SELECT
+            *
+        FROM
+            user_info_beauty
+        <where>
+            <if test="userIdFuzzy != null and userIdFuzzy != ''">
+                user_id like concat('%', #{userIdFuzzy}, '%')
+            </if>
+            <if test="emailFuzzy != null and emailFuzzy != ''">
+                and email like concat('%', #{emailFuzzy}, '%')
+            </if>
+        </where>
+    </select>
 </mapper>

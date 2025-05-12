@@ -25,4 +25,33 @@
         personal_signature,status,create_time,last_login_time,area_name,
         area_code,last_off_time
     </sql>
+
+    <select id="loadUser" resultType="com.mychat.entity.po.UserInfo">
+        SELECT
+            user_id,
+            email,
+            nick_name,
+            join_type,
+            sex,
+            `password`,
+            personal_signature,
+            `status`,
+            create_time,
+            last_login_time,
+            area_name,
+            area_code,
+            last_off_time
+        FROM
+            user_info
+        <where>
+            <if test="userId != null and userId != ''">
+                user_id = #{userId}
+            </if>
+            <if test="nickNameFuzzy != null and nickNameFuzzy != ''">
+                and nick_name like concat('%', #{nickNameFuzzy}, '%')
+            </if>
+        </where>
+        ORDER BY
+            create_time DESC
+    </select>
 </mapper>

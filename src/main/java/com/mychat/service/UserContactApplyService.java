@@ -17,9 +17,10 @@ public interface UserContactApplyService extends IService<UserContactApply> {
      * 获取好友申请列表
      * @param receiveUserId     接收人id（即当前用户id）
      * @param pageNumber        页码
+     * @param pageSize          页容量
      * @return List<UserContactApply>
      */
-    List<UserContactApply> loadApply(String receiveUserId, Integer pageNumber);
+    List<UserContactApply> loadApply(String receiveUserId, Integer pageNumber, Integer pageSize);
 
     /**
      * 处理加群申请或好友申请

@@ -18,4 +18,24 @@
         group_id,group_name,group_owner_id,create_time,group_notice,join_type,
         status
     </sql>
+    <select id="loadGroupList" resultType="com.mychat.entity.po.GroupInfo">
+        SELECT
+            g.*,
+            u.nick_name groupOwnerNickName,
+            ( SELECT COUNT(1) FROM user_contact c WHERE c.contact_id = g.group_id ) memberCount
+        FROM
+            group_info g
+                JOIN user_info u ON g.group_owner_id = u.user_id
+        <where>
+            <if test="groupId != null and groupId != ''">
+                g.group_id = #{groupId}
+            </if>
+            <if test="groupNameFuzzy != null and groupNameFuzzy != ''">
+                and g.group_name like concat('%', #{groupNameFuzzy}, '%')
+            </if>
+            <if test="groupOwnerId != null and groupOwnerId != ''">
+                and g.group_owner_id like concat('%', #{groupOwnerId}, '%')
+            </if>
+        </where>
+    </select>
 </mapper>

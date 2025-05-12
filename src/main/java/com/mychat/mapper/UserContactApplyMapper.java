@@ -13,6 +13,12 @@ import org.apache.ibatis.annotations.Param;
 */
 public interface UserContactApplyMapper extends BaseMapper<UserContactApply> {
 
+    /**
+     * 获取好友申请列表
+     * @param page
+     * @param receiveUserId     接收好友申请的用户id
+     * @return
+     */
     IPage<UserContactApply> loadApply(IPage<UserContactApply> page, @Param("receiveUserId") String receiveUserId);
 }
 

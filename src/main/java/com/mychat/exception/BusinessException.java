@@ -12,7 +12,7 @@ import lombok.Getter;
 @Getter
 public class BusinessException extends RuntimeException {
     private ResultCodeEnum resultCodeEnum;
-    private Integer code;
+    private Integer code = 200;
     private String msg;
 
     public BusinessException(String msg, Throwable e){

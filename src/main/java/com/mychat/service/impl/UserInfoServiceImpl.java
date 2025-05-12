@@ -2,9 +2,11 @@ package com.mychat.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mychat.entity.config.AppConfig;
 import com.mychat.entity.dto.TokenUserInfoDto;
+import com.mychat.entity.po.UserContactApply;
 import com.mychat.entity.vo.UserInfoVo;
 import com.mychat.exception.BusinessException;
 import com.mychat.mapper.UserInfoBeautyMapper;
@@ -15,15 +17,15 @@ import com.mychat.service.UserInfoService;
 import com.mychat.mapper.UserInfoMapper;
 import com.mychat.utils.CopyUtils;
 import com.mychat.utils.StringUtils;
-import com.mychat.utils.enums.BeautyAccountStatusEnum;
-import com.mychat.utils.enums.JoinTypeEnum;
-import com.mychat.utils.enums.UserStatusEnum;
-import com.mychat.utils.enums.UserContactTypeEnum;
+import com.mychat.utils.enums.*;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -49,6 +51,18 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Value("${contants.LENGTH_20}")
     private Integer LENGTH_20;
 
+    @Value("${contants.FILE_FOLDER_FILE}")
+    private String FILE_FOLDER_FILE;
+
+    @Value("${contants.FILE_FOLDER_AVATAR_NAME}")
+    private String FILE_FOLDER_AVATAR_NAME;
+
+    @Value("${contants.PNG_SUFFIX}")
+    private String PNG_SUFFIX;
+
+    @Value("${contants.COVER_PNG_SUFFIX}")
+    private String COVER_PNG_SUFFIX;
+
     /**
      * 用户注册
      *
@@ -58,7 +72,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      */
     @Override
     public void register(String email, String nickName, String password) {
-        Map<String, Object> result = new HashMap<>();
         LambdaQueryWrapper<UserInfo> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UserInfo::getEmail, email);
         UserInfo userInfo = userInfoMapper.selectOne(queryWrapper);
@@ -156,6 +169,106 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userInfoVo.setAdmin(tokenUserInfoDto.getAdmin());
         userInfoVo.setToken(tokenUserInfoDto.getToken());
         return userInfoVo;
+    }
+
+    /**
+     * 修改用户信息
+     *
+     * @param userInfo    修改后的用户信息对象
+     * @param avatarFile  原用户头像
+     * @param avatarCover 用户头像缩略图
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUserInfo(UserInfo userInfo, MultipartFile avatarFile, MultipartFile avatarCover) throws IOException {
+        // 判断是否需要修改头像
+        if (null != avatarFile){
+            // 构建存储路径
+            String baseFolder = appConfig.getProjectFolder() + FILE_FOLDER_FILE;
+            File targetFileFolder = new File(baseFolder + FILE_FOLDER_AVATAR_NAME);
+            if (!targetFileFolder.exists()){
+                targetFileFolder.mkdirs();
+            }
+            String filePath = targetFileFolder.getPath() + "/" + userInfo.getUserId() + PNG_SUFFIX;
+
+            avatarFile.transferTo(new File(filePath));
+            avatarCover.transferTo(new File(filePath + COVER_PNG_SUFFIX));
+        }
+
+        // 查询数据库中原本的用户信息对象
+        UserInfo dbUserInfo = userInfoMapper.selectById(userInfo.getUserId());
+
+        // 更新数据库中用户信息
+        userInfoMapper.updateById(userInfo);
+
+        // 判断用户昵称是否更新（更新界面中用户昵称）
+        String userNickName = null;
+        if (!dbUserInfo.getNickName().equals(userInfo.getNickName())){
+            userNickName = userInfo.getNickName();
+        }
+
+        // TODO 更新会话信息中的昵称信息 （userNickName）
+
+        // TODO 更新token
+
+    }
+
+    /**
+     * 获取用户列表
+     *
+     * @param userId        用户id
+     * @param nickNameFuzzy 用户昵称（支持模糊搜索）
+     * @param pageNumber    页码
+     * @param pageSize      页容量
+     * @return List<UserInfo>
+     */
+    @Override
+    public List<UserInfo> loadUser(String userId, String nickNameFuzzy, Integer pageNumber, Integer pageSize) {
+        // 判断页码参数是否合法
+        if (null == pageNumber || pageNumber <= 0) {
+            pageNumber = 1;
+        }
+
+        // 判断页码参数是否合法
+        if (null == pageSize || pageSize <= 0) {
+            pageSize = 15;
+        }
+
+        // IPage接口的实现对象Page(当前页码, 页容量)
+        Page<UserInfo> page = new Page<>(pageNumber, pageSize);
+        userInfoMapper.loadUser(page, userId, nickNameFuzzy);
+        // 获取当前页数据
+        List<UserInfo> records = page.getRecords();
+        return records;
+    }
+
+    /**
+     * 更新用户状态
+     *
+     * @param status 新的用户状态 0：禁用  1：启用
+     * @param userId 目标用户id
+     */
+    @Override
+    public void updateUserStatus(Integer status, String userId) {
+        UserStatusEnum statusEnum = UserStatusEnum.getByStatue(status);
+        if (null == statusEnum){
+            throw new BusinessException(ResultCodeEnum.CODE_600);
+        }
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(userId);
+        userInfo.setStatus(status);
+        userInfoMapper.updateById(userInfo);
+    }
+
+    /**
+     * 强制下线
+     *
+     * @param userId 被强制下线的用户id
+     */
+    @Override
+    public void forceOffLine(String userId) {
+        // TODO 强制下线
     }
 
     /**

@@ -57,4 +57,8 @@ public class RedisComponent {
         sysSettingDto = sysSettingDto == null ? new SysSettingDto() : sysSettingDto;
         return sysSettingDto;
     }
+
+    public void saveSysSetting(SysSettingDto sysSettingDto){
+        redisUtils.set(REDIS_KEY_SYS_SETTING, sysSettingDto);
+    }
 }

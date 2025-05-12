@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mychat.mapper.AppUpdateMapper">
+
+    <resultMap id="BaseResultMap" type="com.mychat.entity.po.AppUpdate">
+            <id property="id" column="id" />
+            <result property="version" column="version" />
+            <result property="updateDesc" column="update_desc" />
+            <result property="createTime" column="create_time" />
+            <result property="status" column="status" />
+            <result property="grayscaleUid" column="grayscale_uid" />
+            <result property="fileType" column="file_type" />
+            <result property="outerLink" column="outer_link" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,version,update_desc,create_time,status,grayscale_uid,
+        file_type,outer_link
+    </sql>
+
+    <select id="loadUpdateList" resultType="com.mychat.entity.po.AppUpdate">
+        SELECT
+            *
+        FROM
+            app_update
+        <where>
+            <if test="startDate != null and startDate != ''">
+                create_time > #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and #{endDate} > create_time
+            </if>
+        </where>
+        ORDER BY
+            version DESC
+    </select>
+
+    <select id="selectLatestUpdate" resultType="com.mychat.entity.po.AppUpdate">
+        SELECT
+            *
+        FROM
+            app_update
+        WHERE
+            version > #{appVersion}
+          AND (
+            `status` = 2
+                OR ( `status` = 1 AND FIND_IN_SET( #{userId}, grayscale_uid ) ))
+        ORDER BY
+            version DESC
+        LIMIT 0,1
+    </select>
+</mapper>

@@ -25,6 +25,9 @@ public class AppConfig {
     @Value("#{'${admin.emails}'.split(',')}")
     private List<String> adminEmails;     // 管理员邮箱
 
+    // 密码校验正则（8-18为字母数字组合，数字不能开头）
+    public static final String REGEX_PASSWORD = "^(?=[^0-9])(?=.*[A-Za-z])(?=.*\\d).{8,18}$";
+
     public String getProjectFolder() {
         // 如果不是以 "/" 结尾的，加上 "/"
         if (!StringUtils.isEmpty(projectFolder) && !projectFolder.endsWith("/")) {

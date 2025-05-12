@@ -28,7 +28,7 @@ import java.util.List;
 
 @RestController("groupInfoController")
 @RequestMapping("group")
-@Validated
+@Validated         // 参数校验
 public class GroupInfoController extends BaseController{
 
     @Resource
@@ -92,7 +92,7 @@ public class GroupInfoController extends BaseController{
      */
     @PostMapping("getGroupInfo")
     @GlobalInterceptor
-    public Result getGroupInfo(HttpServletRequest request, @NotNull String groupId) {
+    public Result getGroupInfo(HttpServletRequest request, @NotBlank String groupId) {
         // 从请求头中获取token，封装到TokenUserInfoDto对象中
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
 
@@ -113,7 +113,7 @@ public class GroupInfoController extends BaseController{
      */
     @PostMapping("getGroupInfo4Chat")
     @GlobalInterceptor
-    public Result getGroupInfo4Chat(HttpServletRequest request, @NotNull String groupId) {
+    public Result getGroupInfo4Chat(HttpServletRequest request, @NotBlank String groupId) {
         // 从请求头中获取token，封装到TokenUserInfoDto对象中
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
 

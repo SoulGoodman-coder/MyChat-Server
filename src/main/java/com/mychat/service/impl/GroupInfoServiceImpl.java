@@ -1,6 +1,8 @@
 package com.mychat.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mychat.entity.config.AppConfig;
 import com.mychat.entity.dto.SysSettingDto;
@@ -216,6 +218,71 @@ public class GroupInfoServiceImpl extends ServiceImpl<GroupInfoMapper, GroupInfo
     @Override
     public List<UserContact> getGroupUserContactList(String groupId) {
         return userContactMapper.getGroupUserContactList(groupId);
+    }
+
+    /**
+     * 获取群组列表
+     *
+     * @param groupId        群组id
+     * @param groupNameFuzzy 群组名称（支持模糊搜索）
+     * @param groupOwnerId   群主id
+     * @param pageNumber     页码
+     * @param pageSize       页容量
+     * @return List<GroupInfo>
+     */
+    @Override
+    public List<GroupInfo> loadGroupList(String groupId, String groupNameFuzzy, String groupOwnerId, Integer pageNumber, Integer pageSize) {
+        // 判断页码参数是否合法
+        if (null == pageNumber || pageNumber <= 0) {
+            pageNumber = 1;
+        }
+
+        // 判断页容量参数是否合法
+        if (null == pageSize || pageSize <= 0) {
+            pageSize = 15;
+        }
+
+        // IPage接口的实现对象Page(当前页码, 页容量)
+        Page<GroupInfo> page = new Page<>(pageNumber, pageSize);
+        groupInfoMapper.loadGroupList(page, groupId, groupNameFuzzy, groupOwnerId);
+
+        // 获取当前页数据
+        List<GroupInfo> records = page.getRecords();
+        return records;
+    }
+
+    /**
+     * 解散群组
+     *
+     * @param userId  当前用户id
+     * @param groupId 要紧解散的群组id
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void dissolutionGroup(String userId, String groupId) {
+        // 判断当前用户是否是群主
+        GroupInfo dbGroupInfo = groupInfoMapper.selectById(groupId);
+        if (null == dbGroupInfo || !dbGroupInfo.getGroupOwnerId().equals(userId)) {
+            throw new BusinessException(ResultCodeEnum.CODE_600);
+        }
+
+        // 删除群组
+        GroupInfo groupInfo = new GroupInfo();
+        groupInfo.setGroupId(groupId);
+        groupInfo.setStatus(GroupStatusEnum.DISSOLUTION.getStatus());
+        groupInfoMapper.updateById(groupInfo);
+
+        // 删除联系人
+        LambdaUpdateWrapper<UserContact> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(UserContact::getContactId, groupId)
+                     .eq(UserContact::getContactType, UserContactTypeEnum.GROUP.getType())
+                     .set(UserContact::getStatus, UserContactStatusEnum.DEL.getStatus());
+        userContactMapper.update(updateWrapper);
+
+        // TODO 移除群员的联系人缓存
+
+        // TODO 发消息  1、更新会话信息 2、记录群消息 3、发送群聊解散通知消息
+
     }
 }
 

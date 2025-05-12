@@ -33,4 +33,8 @@ public class GroupInfo {
     // 群人数
     @TableField(exist = false)
     private Integer memberCount;
+
+    // 群主昵称
+    @TableField(exist = false)
+    private String groupOwnerNickName;
 }

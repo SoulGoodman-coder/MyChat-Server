@@ -17,6 +17,8 @@ import com.mychat.utils.enums.UserContactTypeEnum;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +33,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("contact")
+@Validated         // 参数校验
 public class UserContactController extends BaseController{
     @Resource
     private UserContactService userContactService;
@@ -78,15 +81,16 @@ public class UserContactController extends BaseController{
      * 获取好友申请列表
      * @param request       request
      * @param pageNumber    页码
+     * @param pageSize      页容量
      * @return Result
      */
     @PostMapping("loadApply")
     @GlobalInterceptor
-    public Result loadApply(HttpServletRequest request, Integer pageNumber){
+    public Result loadApply(HttpServletRequest request, Integer pageNumber, Integer pageSize){
 
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
 
-        List<UserContactApply> userContactApplyList = userContactApplyService.loadApply(tokenUserInfoDto.getUserId(), pageNumber);
+        List<UserContactApply> userContactApplyList = userContactApplyService.loadApply(tokenUserInfoDto.getUserId(), pageNumber, pageSize);
 
         return Result.ok(userContactApplyList);
     }
@@ -100,7 +104,7 @@ public class UserContactController extends BaseController{
      */
     @PostMapping("dealWithApply")
     @GlobalInterceptor
-    public Result dealWithApply(HttpServletRequest request, @NotBlank String applyId, @NotBlank Integer status){
+    public Result dealWithApply(HttpServletRequest request, @NotBlank String applyId, @NotNull Integer status){
 
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
 

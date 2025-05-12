@@ -1,6 +1,7 @@
 package com.mychat.controller;
 
 import com.mychat.annotation.GlobalInterceptor;
+import com.mychat.entity.config.AppConfig;
 import com.mychat.entity.vo.UserInfoVo;
 import com.mychat.exception.BusinessException;
 import com.mychat.redis.RedisComponent;
@@ -11,6 +12,7 @@ import com.wf.captcha.SpecCaptcha;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
@@ -70,7 +72,7 @@ public class AccountController {
     @PostMapping("register")
     public Result register(@NotBlank @Email String email,
                            @NotBlank String nickName,
-                           @NotBlank String password,
+                           @NotBlank @Pattern(regexp = AppConfig.REGEX_PASSWORD) String password,
                            @NotBlank String checkCodeKey,
                            @NotBlank String checkCode) {
         try {

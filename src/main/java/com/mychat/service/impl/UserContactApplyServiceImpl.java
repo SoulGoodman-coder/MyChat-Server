@@ -39,17 +39,23 @@ public class UserContactApplyServiceImpl extends ServiceImpl<UserContactApplyMap
      *
      * @param receiveUserId 接收人id（即当前用户id）
      * @param pageNumber    页码
+     * @param pageSize      页容量
      * @return List<UserContactApply>
      */
     @Override
-    public List<UserContactApply> loadApply(String receiveUserId, Integer pageNumber) {
+    public List<UserContactApply> loadApply(String receiveUserId, Integer pageNumber, Integer pageSize) {
         // 判断页码参数是否合法
         if (null == pageNumber || pageNumber <= 0) {
             pageNumber = 1;
         }
 
+        // 判断页容量参数是否合法
+        if (null == pageSize || pageSize <= 0) {
+            pageSize = 5;
+        }
+
         // IPage接口的实现对象Page(当前页码, 页容量)
-        Page<UserContactApply> page = new Page<>(pageNumber, 5);
+        Page<UserContactApply> page = new Page<>(pageNumber, pageSize);
         userContactApplyMapper.loadApply(page, receiveUserId);
         // 获取当前页数据
         List<UserContactApply> records = page.getRecords();

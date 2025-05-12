@@ -1,7 +1,10 @@
 package com.mychat.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mychat.entity.po.UserInfoBeauty;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author Administrator
@@ -11,6 +14,14 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface UserInfoBeautyMapper extends BaseMapper<UserInfoBeauty> {
 
+    /**
+     * 获取靓号列表
+     * @param page          IPage接口实现对象
+     * @param userIdFuzzy   靓号（支持模糊搜索）
+     * @param emailFuzzy    邮箱（支持模糊搜索）
+     * @return IPage<UserInfoBeauty>
+     */
+    IPage<UserInfoBeauty> loadBeautyAccountList(Page<UserInfoBeauty> page, @Param("userIdFuzzy") String userIdFuzzy, @Param("emailFuzzy") String emailFuzzy);
 }
 
 
