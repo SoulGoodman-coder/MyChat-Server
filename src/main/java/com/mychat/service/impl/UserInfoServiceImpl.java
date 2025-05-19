@@ -5,19 +5,24 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mychat.entity.config.AppConfig;
+import com.mychat.entity.dto.MessageSendDto;
 import com.mychat.entity.dto.TokenUserInfoDto;
-import com.mychat.entity.po.UserContactApply;
+import com.mychat.entity.po.UserContact;
 import com.mychat.entity.vo.UserInfoVo;
 import com.mychat.exception.BusinessException;
+import com.mychat.mapper.UserContactMapper;
 import com.mychat.mapper.UserInfoBeautyMapper;
 import com.mychat.entity.po.UserInfo;
 import com.mychat.entity.po.UserInfoBeauty;
 import com.mychat.redis.RedisComponent;
+import com.mychat.service.ChatSessionUserService;
+import com.mychat.service.UserContactService;
 import com.mychat.service.UserInfoService;
 import com.mychat.mapper.UserInfoMapper;
 import com.mychat.utils.CopyUtils;
 import com.mychat.utils.StringUtils;
 import com.mychat.utils.enums.*;
+import com.mychat.websocket.MessageHandler;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
 * @author Administrator
@@ -43,10 +49,22 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     private UserInfoBeautyMapper userInfoBeautyMapper;
 
     @Resource
+    private UserContactMapper userContactMapper;
+
+    @Resource
+    private UserContactService userContactService;
+
+    @Resource
     private AppConfig appConfig;
 
     @Resource
     private RedisComponent redisComponent;
+
+    @Resource
+    private ChatSessionUserService chatSessionUserService;
+
+    @Resource
+    private MessageHandler messageHandler;
 
     @Value("${contants.LENGTH_20}")
     private Integer LENGTH_20;
@@ -119,7 +137,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             userInfoBeautyMapper.update(updateWrapper);
         }
 
-        // TODO 创建机器人好友
+        // 创建机器人好友
+        userContactService.addContact4Robot(userId);
 
     }
 
@@ -147,7 +166,18 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             throw new BusinessException("账号已禁用");
         }
 
-        // TODO 查询我的群组 查询我的联系人
+        // 查询我的群组 查询我的联系人
+        LambdaQueryWrapper<UserContact> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(UserContact::getUserId, userInfo.getUserId())
+               .eq(UserContact::getStatus, UserContactStatusEnum.FRIEND.getStatus());
+        List<UserContact> userContactList = userContactMapper.selectList(wrapper);
+        List<String> contactIdList = userContactList.stream().map(item -> item.getContactId()).collect(Collectors.toList());
+
+        // 先清空redis用户联系人列表，再添加用户联系人
+        redisComponent.clearUserContact(userInfo.getUserId());
+        if (!contactIdList.isEmpty()){
+            redisComponent.saveUserContactBatch(userInfo.getUserId(), contactIdList);
+        }
 
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(userInfo);
 
@@ -202,14 +232,18 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userInfoMapper.updateById(userInfo);
 
         // 判断用户昵称是否更新（更新界面中用户昵称）
-        String userNickName = null;
-        if (!dbUserInfo.getNickName().equals(userInfo.getNickName())){
-            userNickName = userInfo.getNickName();
+        String userNickNameUpdate = userInfo.getNickName();
+        if (dbUserInfo.getNickName().equals(userNickNameUpdate)){
+            return;
         }
-
-        // TODO 更新会话信息中的昵称信息 （userNickName）
-
-        // TODO 更新token
+        System.out.println("111111111111111111111111111111111111");
+        // 更新会话信息中的昵称信息 （userNickName）
+        chatSessionUserService.updateContactNameByContactId(userInfo.getUserId(), userNickNameUpdate);
+        System.out.println("55555555555555555555555555555555555555");
+        // 更新redis中的token信息
+        TokenUserInfoDto tokenUserInfoDto = redisComponent.getTokenUserInfoDtoByUserId(userInfo.getUserId());
+        tokenUserInfoDto.setNickName(userNickNameUpdate);
+        redisComponent.saveTokenUserInfoDto(tokenUserInfoDto);
 
     }
 
@@ -268,7 +302,11 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      */
     @Override
     public void forceOffLine(String userId) {
-        // TODO 强制下线
+        MessageSendDto<Object> messageSendDto = new MessageSendDto<>();
+        messageSendDto.setContactId(userId);
+        messageSendDto.setContactType(UserContactTypeEnum.USER.getType());
+        messageSendDto.setMessageType(MessageTypeEnum.FORCE_OFF_LINE.getType());
+        messageHandler.sendMessage(messageSendDto);
     }
 
     /**

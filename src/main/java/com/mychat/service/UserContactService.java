@@ -26,15 +26,6 @@ public interface UserContactService extends IService<UserContact> {
     UserContactSearchDto searchContact(String userId, String contactId);
 
     /**
-     * 添加好友、群组
-     * @param tokenUserInfoDto  tokenUserInfoDto
-     * @param contactId         联系人id
-     * @param applyInfo         申请信息
-     * @return                  添加类型
-     */
-    Integer applyAdd(TokenUserInfoDto tokenUserInfoDto, String contactId, String applyInfo);
-
-    /**
      * 添加联系人（数据库操作）
      * @param applyUserId       申请人id
      * @param receiveUserId     接收人id
@@ -43,6 +34,12 @@ public interface UserContactService extends IService<UserContact> {
      * @param applyInfo         申请信息
      */
     void addContact(String applyUserId, String receiveUserId, String contactId, Integer contactType, String applyInfo);
+
+    /**
+     * 添加机器人好友
+     * @param userId            当前用户id
+     */
+    void addContact4Robot(String userId);
 
     /**
      * 根据userId和contactId插入或更新

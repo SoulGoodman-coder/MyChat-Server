@@ -11,6 +11,7 @@ import com.mychat.utils.CopyUtils;
 import com.mychat.utils.Result;
 import com.mychat.utils.StringUtils;
 import com.mychat.utils.enums.ResultCodeEnum;
+import com.mychat.websocket.ChannelContextUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
@@ -36,6 +37,9 @@ public class UserInfoController extends BaseController{
 
     @Resource
     private UserInfoService userInfoService;
+
+    @Resource
+    private ChannelContextUtils channelContextUtils;
 
     /**
      * 获取当前用户信息
@@ -106,7 +110,8 @@ public class UserInfoController extends BaseController{
         userInfo.setPassword(StringUtils.encodeMD5(password));
         userInfoService.updateById(userInfo);
 
-        // TODO 强制退出 重新登录
+        // 强制退出 重新登录
+        channelContextUtils.closeContext(tokenUserInfoDto.getUserId());
 
         return Result.ok(null);
     }
@@ -122,7 +127,8 @@ public class UserInfoController extends BaseController{
 
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
 
-        // TODO 退出登录 关闭ws连接
+        // 退出登录 关闭ws连接
+        channelContextUtils.closeContext(tokenUserInfoDto.getUserId());
 
         return Result.ok(null);
     }

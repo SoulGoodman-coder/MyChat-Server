@@ -1,8 +1,10 @@
 package com.mychat.service;
 
+import com.mychat.entity.dto.TokenUserInfoDto;
 import com.mychat.entity.po.GroupInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.mychat.entity.po.UserContact;
+import com.mychat.utils.enums.MessageTypeEnum;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -68,4 +70,21 @@ public interface GroupInfoService extends IService<GroupInfo> {
      * @param groupId           要紧解散的群组id
      */
     void dissolutionGroup(String userId, String groupId);
+
+    /**
+     * 群组添加或移除人员
+     * @param tokenUserInfoDto  用户token对象
+     * @param groupId           群组id
+     * @param selectContacts    选择的要操作的人员
+     * @param opType            操作类型 添加 移除
+     */
+    void addOrRemoveGroupUser(TokenUserInfoDto tokenUserInfoDto, String groupId, String selectContacts, Integer opType);
+
+    /**
+     * 退群（或被踢出群组）
+     * @param userId            用户id
+     * @param groupId           群组id
+     * @param messageTypeEnum   消息类型
+     */
+    void leaveGroup(String userId, String groupId, MessageTypeEnum messageTypeEnum);
 }

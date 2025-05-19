@@ -144,6 +144,7 @@
             <version>${netty.version}</version>
         </dependency>
 
+        <!--redisson-->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>

@@ -9,13 +9,19 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * @TableName user_contact_apply
  */
 @TableName(value ="user_contact_apply")
 @Data
-public class UserContactApply {
-    @TableId
+public class UserContactApply implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @TableId(type = IdType.AUTO)
     private Integer applyId;
 
     private String applyUserId;

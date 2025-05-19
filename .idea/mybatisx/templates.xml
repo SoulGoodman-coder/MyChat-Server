@@ -67,8 +67,16 @@
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="AppUpdate" />
-                  <option name="tableName" value="app_update" />
+                  <option name="className" value="ChatMessage" />
+                  <option name="tableName" value="chat_message" />
+                </TableUIInfo>
+                <TableUIInfo>
+                  <option name="className" value="ChatSession" />
+                  <option name="tableName" value="chat_session" />
+                </TableUIInfo>
+                <TableUIInfo>
+                  <option name="className" value="ChatSessionUser" />
+                  <option name="tableName" value="chat_session_user" />
                 </TableUIInfo>
               </list>
             </option>

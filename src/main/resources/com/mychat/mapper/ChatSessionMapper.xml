@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mychat.mapper.ChatSessionMapper">
+
+    <resultMap id="BaseResultMap" type="com.mychat.entity.po.ChatSession">
+            <id property="sessionId" column="session_id" />
+            <result property="lastMessage" column="last_message" />
+            <result property="lastReceiveTime" column="last_receive_time" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        session_id,last_message,last_receive_time
+    </sql>
+</mapper>

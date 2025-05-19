@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mychat.mapper.ChatSessionUserMapper">
+
+    <resultMap id="BaseResultMap" type="com.mychat.entity.po.ChatSessionUser">
+            <id property="userId" column="user_id" />
+            <id property="contactId" column="contact_id" />
+            <result property="sessionId" column="session_id" />
+            <result property="contactName" column="contact_name" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id,contact_id,session_id,contact_name
+    </sql>
+
+    <select id="selectChatSessionInfoList" resultType="com.mychat.entity.po.ChatSessionUser">
+        SELECT
+            u.*,
+            s.last_message lastMessage,
+            s.last_receive_time lastReceiveTime,
+            CASE SUBSTRING(u.contact_id, 1, 1)
+                WHEN 'G' THEN
+                    ( SELECT count(1) FROM user_contact c WHERE c.contact_id = u.contact_id )
+                ELSE 0
+                END AS memberCount
+        FROM
+            chat_session_user u
+            JOIN chat_session s ON u.session_id = s.session_id
+        WHERE
+            user_id = #{userId}
+        ORDER BY
+            s.last_receive_time DESC
+    </select>
+</mapper>

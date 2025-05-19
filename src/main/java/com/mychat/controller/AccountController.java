@@ -47,8 +47,8 @@ public class AccountController {
     @Value("${contants.REDIS_KEY_CHECK_CODE}")
     private String REDIS_KEY_CHECK_CODE;
 
-    @Value("${contants.REDIS_TIME_1MIN}")
-    private Integer REDIS_TIME_1MIN;
+    @Value("${contants.TIME_SECOND_1MIN}")
+    private Integer TIME_SECOND_1MIN;
 
     // 获取验证码
     @PostMapping("checkCode")
@@ -59,7 +59,7 @@ public class AccountController {
         String checkCodeKey = UUID.randomUUID().toString();     // 为当前验证码生成一个uuid用作标识
 
         // 将验证码放入redis
-        redisUtils.set(REDIS_KEY_CHECK_CODE + checkCodeKey, checkCode, REDIS_TIME_1MIN * 10);
+        redisUtils.set(REDIS_KEY_CHECK_CODE + checkCodeKey, checkCode, TIME_SECOND_1MIN * 10);
 
         // 封装返回数据
         Map<String, String> map = new HashMap<>();

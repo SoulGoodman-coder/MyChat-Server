@@ -1,8 +1,12 @@
 package com.mychat.entity.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Date;
+import com.mychat.utils.enums.UserOnlineStatusEnum;
 import lombok.Data;
 
 /**
@@ -10,7 +14,10 @@ import lombok.Data;
  */
 @TableName(value ="user_info")
 @Data
-public class UserInfo {
+public class UserInfo implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @TableId
     private String userId;
 
@@ -37,4 +44,14 @@ public class UserInfo {
     private String areaCode;
 
     private Long lastOffTime;
+
+    @TableField(exist = false)
+    private Integer onlineType;
+
+    public Integer getOnlineType() {
+        if (null != lastLoginTime && lastLoginTime.getTime() > lastOffTime) {
+            return UserOnlineStatusEnum.ONLINE.getStatus();
+        }
+        return UserOnlineStatusEnum.OFFLINE.getStatus();
+    }
 }

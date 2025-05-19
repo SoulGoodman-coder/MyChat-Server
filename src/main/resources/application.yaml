@@ -32,10 +32,13 @@ contants:
   REDIS_KEY_USER_HEARTBEAT: "myChat:user:heartbeat:"
   REDIS_KEY_USER_TOKEN: "myChat:user:token:"
   REDIS_KEY_USER_TOKEN_USERID: "myChat:user:token:userid:"
+  REDIS_KEY_USER_CONTACT: "myChat:user:contact:"
   REDIS_KEY_SYS_SETTING: "myChat:sys:setting"
-  REDIS_TIME_1MIN: 60
-  REDIS_TIME_1HOUR: 3600
-  REDIS_TIME_1Day: 86400
+  REDIS_TIME_HEART_BEAT_EXPIRES: 6
+  TIME_SECOND_1MIN: 60
+  TIME_SECOND_1HOUR: 3600
+  TIME_SECOND_1Day: 86400
+  TIME_MILLISECONDS_1DAY: 86400000
   LENGTH_20: 20
   APP_NAME: "MyChatSetup"
   FILE_FOLDER_FILE: "file/"
@@ -43,6 +46,8 @@ contants:
   FILE_FOLDER_AVATAR_NAME: "avatar/"
   PNG_SUFFIX: ".png"
   EXE_SUFFIX: ".exe"
+  IMAGE_SUFFIX_LIST: .jpeg,.jpg,.png,.gif,.bmp,.webp
+  VIDEO_SUFFIX_LIST: .mp4,.avi,.rmvb,.mkv,.mov,.webp
   COVER_PNG_SUFFIX: "_cover.png"
   APPLY_INFO_TEMPLATE: "我是%s"
 
@@ -58,8 +63,8 @@ spring:
   servlet:
     multipart:
       # 限制上传文件大小
-      max-file-size: 15MB
-      max-request-size: 15MB
+      max-file-size: 500MB
+      max-request-size: 500MB
 
   datasource:
     druid:

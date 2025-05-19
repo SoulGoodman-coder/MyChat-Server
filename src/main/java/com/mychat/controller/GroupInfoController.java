@@ -7,6 +7,7 @@ import com.mychat.entity.po.UserContact;
 import com.mychat.entity.vo.GroupInfoVo;
 import com.mychat.service.GroupInfoService;
 import com.mychat.utils.Result;
+import com.mychat.utils.enums.MessageTypeEnum;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
@@ -51,8 +52,10 @@ public class GroupInfoController extends BaseController{
                             @NotBlank String groupName,
                             String groupNotice,
                             @NotNull Integer joinType,
-                            MultipartFile avatarFile, // 原群头像
-                            MultipartFile avatarCover) throws IOException {   // 群头像缩略图
+                            MultipartFile avatarFile, // 原群头像(参数不能为空)
+                            MultipartFile avatarCover) throws IOException {   // 群头像缩略图(参数不能为空)
+
+        System.out.println("request = " + request + ", groupId = " + groupId + ", groupName = " + groupName + ", groupNotice = " + groupNotice + ", joinType = " + joinType + ", avatarFile = " + avatarFile + ", avatarCover = " + avatarCover);
 
         // 从请求头中获取token，封装到TokenUserInfoDto对象中
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
@@ -129,6 +132,64 @@ public class GroupInfoController extends BaseController{
         groupInfoVo.setUserContactList(userContactList);
 
         return Result.ok(groupInfoVo);
+    }
+
+    /**
+     * 群组添加或移除人员
+     * @param request           request
+     * @param groupId           群组id
+     * @param selectContacts    选择的要操作的人员
+     * @param opType            操作类型 0:添加 1:移除
+     * @return
+     */
+    @PostMapping("addOrRemoveGroupUser")
+    @GlobalInterceptor
+    public Result addOrRemoveGroupUser(HttpServletRequest request,
+                                       @NotBlank String groupId,
+                                       @NotBlank String selectContacts,
+                                       @NotBlank Integer opType) {
+        // 从请求头中获取token，封装到TokenUserInfoDto对象中
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
+
+        groupInfoService.addOrRemoveGroupUser(tokenUserInfoDto, groupId, selectContacts, opType);
+
+        return Result.ok(null);
+    }
+
+    /**
+     * 退出群聊
+     * @param request       request
+     * @param groupId       要退出的群组id
+     * @return Result
+     */
+    @PostMapping("leaveGroup")
+    @GlobalInterceptor
+    public Result leaveGroup(HttpServletRequest request,
+                             @NotBlank String groupId) {
+        // 从请求头中获取token，封装到TokenUserInfoDto对象中
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
+
+        groupInfoService.leaveGroup(tokenUserInfoDto.getUserId(), groupId, MessageTypeEnum.LEAVE_GROUP);
+
+        return Result.ok(null);
+    }
+
+    /**
+     * 解散群聊
+     * @param request       request
+     * @param groupId       要解散的群组id
+     * @return Result
+     */
+    @PostMapping("dissolutionGroup")
+    @GlobalInterceptor
+    public Result dissolutionGroup(HttpServletRequest request,
+                                   @NotBlank String groupId) {
+        // 从请求头中获取token，封装到TokenUserInfoDto对象中
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
+
+        groupInfoService.dissolutionGroup(tokenUserInfoDto.getUserId(), groupId);
+
+        return Result.ok(null);
     }
 
 }

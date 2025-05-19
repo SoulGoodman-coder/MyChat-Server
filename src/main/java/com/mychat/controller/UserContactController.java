@@ -39,9 +39,6 @@ public class UserContactController extends BaseController{
     private UserContactService userContactService;
 
     @Resource
-    private UserInfoService userInfoService;
-
-    @Resource
     private UserContactApplyService userContactApplyService;
 
     /**
@@ -72,7 +69,7 @@ public class UserContactController extends BaseController{
     public Result applyAdd(HttpServletRequest request, @NotBlank String contactId, String applyInfo){
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
 
-        Integer joinType = userContactService.applyAdd(tokenUserInfoDto, contactId, applyInfo);
+        Integer joinType = userContactApplyService.applyAdd(tokenUserInfoDto, contactId, applyInfo);
 
         return Result.ok(joinType);
     }

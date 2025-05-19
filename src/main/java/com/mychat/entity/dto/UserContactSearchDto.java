@@ -4,6 +4,9 @@ import com.mychat.utils.enums.UserContactStatusEnum;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * projectName: com.mychat.entity.dto
  * author:  SoulGoodman-coder
@@ -11,7 +14,10 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class UserContactSearchDto {
+public class UserContactSearchDto implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private String contactId;
     // 联系人类型 0：好友 1：群组
     private Integer contactType;
