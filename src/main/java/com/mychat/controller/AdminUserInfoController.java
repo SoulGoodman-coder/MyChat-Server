@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * projectName: com.mychat.controller
@@ -40,9 +41,9 @@ public class AdminUserInfoController {
     @GlobalInterceptor(checkAdmin = true)
     public Result loadUser(String userId, String nickNameFuzzy, Integer pageNumber, Integer pageSize){
 
-        List<UserInfo> userInfoList = userInfoService.loadUser(userId, nickNameFuzzy, pageNumber, pageSize);
+        Map<String, Object> userInfoMap = userInfoService.loadUser(userId, nickNameFuzzy, pageNumber, pageSize);
 
-        return Result.ok(userInfoList);
+        return Result.ok(userInfoMap);
     }
 
     /**

@@ -5,6 +5,7 @@ import com.mychat.entity.po.UserContactApply;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author Administrator
@@ -29,7 +30,7 @@ public interface UserContactApplyService extends IService<UserContactApply> {
      * @param pageSize          页容量
      * @return List<UserContactApply>
      */
-    List<UserContactApply> loadApply(String receiveUserId, Integer pageNumber, Integer pageSize);
+    Map<String, Object> loadApply(String receiveUserId, Integer pageNumber, Integer pageSize);
 
     /**
      * 处理加群申请或好友申请

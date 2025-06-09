@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * projectName: com.mychat.controller
@@ -44,9 +45,9 @@ public class AdminAppUpdateController {
     @GlobalInterceptor(checkAdmin = true)
     public Result loadUpdateList(String startDate, String endDate, Integer pageNumber, Integer pageSize){
 
-        List<AppUpdate> appUpdateList = appUpdateService.loadUpdateList(startDate, endDate, pageNumber, pageSize);
+        Map<String, Object> appUpdateMap = appUpdateService.loadUpdateList(startDate, endDate, pageNumber, pageSize);
 
-        return Result.ok(appUpdateList);
+        return Result.ok(appUpdateMap);
     }
 
     /**

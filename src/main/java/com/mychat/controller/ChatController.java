@@ -153,7 +153,6 @@ public class ChatController extends BaseController{
                  * */
                 file = chatMessageService.downloadFile(tokenUserInfoDto, Long.valueOf(fileId), showCover);
             }
-
             response.setContentType("application/x-msdownload;charset=utf-8");
             response.setHeader("Content-Disposition", "attachment;filename=" + new String((fileId + PNG_SUFFIX).getBytes(), "ISO-8859-1"));
             response.setContentLengthLong(file.length());

@@ -21,7 +21,7 @@ project:
 
 # 超级管理员id
 admin:
-  emails: admin.qq.com,xiaowang@qq.com
+  emails: admin@qq.com,test01@qq.com
 
 # 是否开发环境
 dev: false
@@ -87,9 +87,9 @@ spring:
     # redis配置
     redis:
       database: 0
-      host: 8.219.153.190
+      host: 123.56.201.207
       port: 6379
-      password: Sa123456
+      password: Wyz8472SWaz45wr
       jedis:
         pool:
           # 连接池最大连接数（负值表示无限制）
@@ -102,13 +102,3 @@ spring:
           min-idle: 0
       # 连接超时时间（毫秒）
       timeout: 2000
-
-
-# mybatis-plus的配置
-#mybatis-plus:
-#  type-aliases-package: com.mychat.pojo
-#  global-config:
-#    db-config:
-#      logic-delete-field: isDeleted  #全局逻辑删除
-#      id-type: auto #主键策略自增长
-#      table-prefix: news_ # 设置表的前缀

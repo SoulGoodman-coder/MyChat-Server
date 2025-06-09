@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author Administrator
@@ -60,9 +61,9 @@ public interface GroupInfoService extends IService<GroupInfo> {
      * @param groupOwnerId      群主id
      * @param pageNumber        页码
      * @param pageSize          页容量
-     * @return List<GroupInfo>
+     * @return Map<String, Object>
      */
-    List<GroupInfo> loadGroupList(String groupId, String groupNameFuzzy, String groupOwnerId, Integer pageNumber, Integer pageSize);
+    Map<String, Object> loadGroupList(String groupId, String groupNameFuzzy, String groupOwnerId, Integer pageNumber, Integer pageSize);
 
     /**
      * 解散群组

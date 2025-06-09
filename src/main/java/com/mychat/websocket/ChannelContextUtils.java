@@ -138,8 +138,7 @@ public class ChannelContextUtils {
         MessageSendDto<WsInitDateDto> messageSendDto = new MessageSendDto<>();
         messageSendDto.setMessageType(MessageTypeEnum.INIT.getType());
         messageSendDto.setContactId(userId);
-        messageSendDto.setExtendDate(wsInitDateDto);
-
+        messageSendDto.setExtendData(wsInitDateDto);
         sendMessage(messageSendDto);
     }
 
@@ -195,13 +194,12 @@ public class ChannelContextUtils {
         if (null == channelGroup){
             return;
         }
-
         channelGroup.writeAndFlush(new TextWebSocketFrame(JsonUtils.covertObj2Json(messageSendDto)));
 
         MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByType(messageSendDto.getMessageType());
         // 退出群聊或被踢出群聊
         if (MessageTypeEnum.LEAVE_GROUP == messageTypeEnum || MessageTypeEnum.REMOVE_GROUP == messageTypeEnum){
-            String userId = (String) messageSendDto.getExtendDate();
+            String userId = (String) messageSendDto.getExtendData();
             redisComponent.removeUserContact(userId, messageSendDto.getContactId());
             Channel channel = USER_CHANNEL_CONTEXT_MAP.get(userId);
             if (null != channel){
@@ -235,11 +233,11 @@ public class ChannelContextUtils {
         // 对两个客户端之间发送消息，接收方的联系人就是消息的发送人（创建会话时，给申请人发的ws消息则不必处理）
         if (MessageTypeEnum.ADD_FRIEND_SELF.getType().equals(messageSendDto.getMessageType())){
             // 接收人信息
-            UserInfo contactUserInfo = (UserInfo) messageSendDto.getExtendDate();
+            UserInfo contactUserInfo = (UserInfo) messageSendDto.getExtendData();
             messageSendDto.setMessageType(MessageTypeEnum.ADD_FRIEND.getType());
             messageSendDto.setContactId(contactUserInfo.getUserId());
             messageSendDto.setContactName(contactUserInfo.getNickName());
-            messageSendDto.setExtendDate(null);
+            messageSendDto.setExtendData(null);
         }else {
             messageSendDto.setContactId(messageSendDto.getSendUserId());
             messageSendDto.setContactName(messageSendDto.getSendUserNickName());

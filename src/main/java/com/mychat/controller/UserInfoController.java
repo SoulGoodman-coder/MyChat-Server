@@ -16,6 +16,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +34,7 @@ import java.io.IOException;
 @RestController("userInfoController")
 @RequestMapping("userInfo")
 @Validated         // 参数校验
+@Slf4j
 public class UserInfoController extends BaseController{
 
     @Resource
@@ -80,14 +82,12 @@ public class UserInfoController extends BaseController{
         if (!tokenUserInfoDto.getUserId().equals(userInfo.getUserId())){
             throw new BusinessException(ResultCodeEnum.CODE_600);
         }
-
         // 将用户不可修改的参数置空（防止接口攻击）
         userInfo.setPassword(null);
         userInfo.setStatus(null);
         userInfo.setCreateTime(null);
         userInfo.setLastLoginTime(null);
         userInfo.setLastOffTime(null);
-
         userInfoService.updateUserInfo(userInfo, avatarFile, avatarCover);
 
         return Result.ok(tokenUserInfoDto);

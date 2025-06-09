@@ -4,6 +4,7 @@ import com.mychat.entity.po.UserInfoBeauty;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author Administrator
@@ -24,7 +25,7 @@ public interface UserInfoBeautyService extends IService<UserInfoBeauty> {
      * @param emailFuzzy    邮箱（支持模糊搜索）
      * @param pageNumber    页码
      * @param pageSize      页容量
-     * @return List<UserInfoBeauty>
+     * @return Map<String, Object>
      */
-    List<UserInfoBeauty> loadBeautyAccountList(String userIdFuzzy, String emailFuzzy, Integer pageNumber, Integer pageSize);
+    Map<String, Object> loadBeautyAccountList(String userIdFuzzy, String emailFuzzy, Integer pageNumber, Integer pageSize);
 }

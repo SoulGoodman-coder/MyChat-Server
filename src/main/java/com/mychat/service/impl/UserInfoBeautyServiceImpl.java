@@ -9,12 +9,14 @@ import com.mychat.exception.BusinessException;
 import com.mychat.mapper.UserInfoMapper;
 import com.mychat.service.UserInfoBeautyService;
 import com.mychat.mapper.UserInfoBeautyMapper;
+import com.mychat.utils.PageUtils;
 import com.mychat.utils.enums.BeautyAccountStatusEnum;
 import com.mychat.utils.enums.ResultCodeEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author Administrator
@@ -112,7 +114,7 @@ public class UserInfoBeautyServiceImpl extends ServiceImpl<UserInfoBeautyMapper,
      * @return List<UserInfoBeauty>
      */
     @Override
-    public List<UserInfoBeauty> loadBeautyAccountList(String userIdFuzzy, String emailFuzzy, Integer pageNumber, Integer pageSize) {
+    public Map<String, Object> loadBeautyAccountList(String userIdFuzzy, String emailFuzzy, Integer pageNumber, Integer pageSize) {
         // 判断页码参数是否合法
         if (null == pageNumber || pageNumber <= 0) {
             pageNumber = 1;
@@ -128,8 +130,10 @@ public class UserInfoBeautyServiceImpl extends ServiceImpl<UserInfoBeautyMapper,
         userInfoBeautyMapper.loadBeautyAccountList(page, userIdFuzzy, emailFuzzy);
 
         // 获取当前页数据
-        List<UserInfoBeauty> records = page.getRecords();
-        return records;
+        // List<UserInfoBeauty> records = page.getRecords();
+        // 封装分页数据
+        Map<String, Object> pageResultData = PageUtils.getPageResultData(page);
+        return pageResultData;
     }
 }
 

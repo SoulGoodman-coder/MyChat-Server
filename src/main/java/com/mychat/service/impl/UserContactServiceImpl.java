@@ -245,7 +245,7 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
             // 发送ws消息给申请人
             messageSendDto.setMessageType(MessageTypeEnum.ADD_FRIEND_SELF.getType());
             messageSendDto.setContactId(applyUserId);
-            messageSendDto.setExtendDate(contactUserInfo);  // 将接收人信息传给申请人
+            messageSendDto.setExtendData(contactUserInfo);  // 将接收人信息传给申请人
             messageHandler.sendMessage(messageSendDto);
 
         }else {         // 添加群组
@@ -290,7 +290,8 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
             redisComponent.saveUserContact(groupInfo.getGroupOwnerId(), groupInfo.getGroupId());
 
             // 将用户添加到groupChannel
-            channelContextUtils.addUser2Group(groupInfo.getGroupOwnerId(), groupInfo.getGroupId());
+            // channelContextUtils.addUser2Group(groupInfo.getGroupOwnerId(), groupInfo.getGroupId());
+            channelContextUtils.addUser2Group(applyUserId, groupInfo.getGroupId());
 
             // 补全MessageSendDto属性 发送ws消息
             MessageSendDto messageSendDto = CopyUtils.copy(chatMessage, MessageSendDto.class);
@@ -299,7 +300,11 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
             queryWrapper.eq(UserContact::getContactId, contactId)
                         .eq(UserContact::getStatus, UserContactStatusEnum.FRIEND.getStatus());
             Long count = userContactMapper.selectCount(queryWrapper);
+
+            messageSendDto.setContactName(groupInfo.getGroupName());
             messageSendDto.setMemberCount(count.intValue());
+            System.out.println(messageSendDto);
+
             messageHandler.sendMessage(messageSendDto);
         }
 

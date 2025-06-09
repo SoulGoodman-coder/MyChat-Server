@@ -17,6 +17,7 @@ import com.mychat.mapper.UserInfoMapper;
 import com.mychat.service.UserContactApplyService;
 import com.mychat.mapper.UserContactApplyMapper;
 import com.mychat.service.UserContactService;
+import com.mychat.utils.PageUtils;
 import com.mychat.utils.StringUtils;
 import com.mychat.utils.enums.*;
 import com.mychat.websocket.MessageHandler;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author Administrator
@@ -171,7 +173,7 @@ public class UserContactApplyServiceImpl extends ServiceImpl<UserContactApplyMap
      * @return List<UserContactApply>
      */
     @Override
-    public List<UserContactApply> loadApply(String receiveUserId, Integer pageNumber, Integer pageSize) {
+    public Map<String, Object> loadApply(String receiveUserId, Integer pageNumber, Integer pageSize) {
         // 判断页码参数是否合法
         if (null == pageNumber || pageNumber <= 0) {
             pageNumber = 1;
@@ -185,9 +187,10 @@ public class UserContactApplyServiceImpl extends ServiceImpl<UserContactApplyMap
         // IPage接口的实现对象Page(当前页码, 页容量)
         Page<UserContactApply> page = new Page<>(pageNumber, pageSize);
         userContactApplyMapper.loadApply(page, receiveUserId);
-        // 获取当前页数据
-        List<UserContactApply> records = page.getRecords();
-        return records;
+        // 封装分页数据
+        Map<String, Object> pageResultData = PageUtils.getPageResultData(page);
+
+        return pageResultData;
     }
 
     /**

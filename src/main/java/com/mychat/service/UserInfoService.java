@@ -45,9 +45,9 @@ public interface UserInfoService extends IService<UserInfo> {
      * @param nickNameFuzzy 用户昵称（支持模糊搜索）
      * @param pageNumber    页码
      * @param pageSize      页容量
-     * @return List<UserInfo>
+     * @return Map<String, Object>
      */
-    List<UserInfo> loadUser(String userId, String nickNameFuzzy, Integer pageNumber, Integer pageSize);
+    Map<String, Object> loadUser(String userId, String nickNameFuzzy, Integer pageNumber, Integer pageSize);
 
     /**
      * 更新用户状态

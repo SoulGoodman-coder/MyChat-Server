@@ -31,8 +31,8 @@
                 END as contactName
         FROM
             user_contact_apply a
-                LEFT JOIN user_info u on a.contact_id = u.user_id
-                LEFT JOIN group_info g on a.contact_id = g.group_id
+                LEFT JOIN user_info u on a.apply_user_id = u.user_id
+                LEFT JOIN group_info g on a.apply_user_id = g.group_id
         WHERE
             a.receive_user_id = #{receiveUserId}
         ORDER BY last_apply_time DESC

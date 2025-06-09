@@ -33,7 +33,6 @@
             nick_name,
             join_type,
             sex,
-            `password`,
             personal_signature,
             `status`,
             create_time,

@@ -51,7 +51,7 @@ public class RedisConfig<T> {
     public RedissonClient redissonClient(){
         try {
             Config config = new Config();
-            config.useSingleServer().setAddress("redis://" + redisHost + ":" + redisPort.toString()).setPassword(redisPassword);
+            config.useSingleServer().setAddress("redis://" + redisHost + ":" + redisPort.toString()).setPassword(redisPassword).setPingConnectionInterval(1000);
             RedissonClient redissonClient = Redisson.create(config);
             return redissonClient;
         }catch (Exception e){

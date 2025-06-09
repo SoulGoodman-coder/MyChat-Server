@@ -8,6 +8,7 @@ import com.mychat.entity.po.AppUpdate;
 import com.mychat.exception.BusinessException;
 import com.mychat.service.AppUpdateService;
 import com.mychat.mapper.AppUpdateMapper;
+import com.mychat.utils.PageUtils;
 import com.mychat.utils.StringUtils;
 import com.mychat.utils.enums.AppUpdateFileTypeEnum;
 import com.mychat.utils.enums.AppUpdateStatusEnum;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author Administrator
@@ -121,7 +123,7 @@ public class AppUpdateServiceImpl extends ServiceImpl<AppUpdateMapper, AppUpdate
      * @return List<AppUpdate>
      */
     @Override
-    public List<AppUpdate> loadUpdateList(String startDate, String endDate, Integer pageNumber, Integer pageSize) {
+    public Map<String, Object> loadUpdateList(String startDate, String endDate, Integer pageNumber, Integer pageSize) {
         // 判断页码参数是否合法
         if (null == pageNumber || pageNumber <= 0) {
             pageNumber = 1;
@@ -137,8 +139,10 @@ public class AppUpdateServiceImpl extends ServiceImpl<AppUpdateMapper, AppUpdate
         appUpdateMapper.loadUpdateList(page, startDate, endDate);
 
         // 获取当前页数据
-        List<AppUpdate> records = page.getRecords();
-        return records;
+        // List<AppUpdate> records = page.getRecords();
+        // 封装分页数据
+        Map<String, Object> pageResultData = PageUtils.getPageResultData(page);
+        return pageResultData;
     }
 
     /**

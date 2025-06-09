@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mychat.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -16,6 +17,7 @@ import java.io.Serializable;
 
 @Getter
 @Setter
+@ToString
 @JsonIgnoreProperties(ignoreUnknown = true)     // 序列化时忽略不存在的字段
 public class MessageSendDto<T> implements Serializable {
     @Serial
@@ -43,7 +45,7 @@ public class MessageSendDto<T> implements Serializable {
 
     private Integer contactType;        // 联系人类型 0：单聊 1：群聊
 
-    private T extendDate;       // 扩展消息
+    private T extendData;       // 扩展消息
 
     private Integer status;     // 消息状态 0：发送中 1：已发送
 

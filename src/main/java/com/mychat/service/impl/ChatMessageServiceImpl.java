@@ -274,6 +274,7 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
         String contactId = chatMessage.getContactId();  // 联系人id
         UserContactTypeEnum contactTypeEnum = UserContactTypeEnum.getByPrefix(contactId);   // 联系人类型
         // 判断当前用户是否是文件消息的接收人
+        // TODO 允许下载自己发送的文件（即当前用户是文件消息发送人也行）
         if (UserContactTypeEnum.USER == contactTypeEnum && !tokenUserInfoDto.getUserId().equals(contactId)){
             throw new BusinessException(ResultCodeEnum.CODE_600);
         }
@@ -286,6 +287,7 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
                         .eq(UserContact::getStatus, UserContactStatusEnum.FRIEND.getStatus());
             Long count = userContactMapper.selectCount(queryWrapper);
             if (count == 0){
+                System.out.println("66666666666666666666");
                 throw new BusinessException(ResultCodeEnum.CODE_600);
             }
         }

@@ -20,6 +20,7 @@ import com.mychat.service.UserContactService;
 import com.mychat.service.UserInfoService;
 import com.mychat.mapper.UserInfoMapper;
 import com.mychat.utils.CopyUtils;
+import com.mychat.utils.PageUtils;
 import com.mychat.utils.StringUtils;
 import com.mychat.utils.enums.*;
 import com.mychat.websocket.MessageHandler;
@@ -236,10 +237,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (dbUserInfo.getNickName().equals(userNickNameUpdate)){
             return;
         }
-        System.out.println("111111111111111111111111111111111111");
         // 更新会话信息中的昵称信息 （userNickName）
         chatSessionUserService.updateContactNameByContactId(userInfo.getUserId(), userNickNameUpdate);
-        System.out.println("55555555555555555555555555555555555555");
         // 更新redis中的token信息
         TokenUserInfoDto tokenUserInfoDto = redisComponent.getTokenUserInfoDtoByUserId(userInfo.getUserId());
         tokenUserInfoDto.setNickName(userNickNameUpdate);
@@ -254,10 +253,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * @param nickNameFuzzy 用户昵称（支持模糊搜索）
      * @param pageNumber    页码
      * @param pageSize      页容量
-     * @return List<UserInfo>
+     * @return Map<String, Object>
      */
     @Override
-    public List<UserInfo> loadUser(String userId, String nickNameFuzzy, Integer pageNumber, Integer pageSize) {
+    public Map<String, Object> loadUser(String userId, String nickNameFuzzy, Integer pageNumber, Integer pageSize) {
         // 判断页码参数是否合法
         if (null == pageNumber || pageNumber <= 0) {
             pageNumber = 1;
@@ -272,8 +271,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         Page<UserInfo> page = new Page<>(pageNumber, pageSize);
         userInfoMapper.loadUser(page, userId, nickNameFuzzy);
         // 获取当前页数据
-        List<UserInfo> records = page.getRecords();
-        return records;
+        // List<UserInfo> records = page.getRecords();
+        // 封装分页数据
+        Map<String, Object> pageResultData = PageUtils.getPageResultData(page);
+        return pageResultData;
     }
 
     /**

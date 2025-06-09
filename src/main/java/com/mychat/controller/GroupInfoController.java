@@ -147,7 +147,7 @@ public class GroupInfoController extends BaseController{
     public Result addOrRemoveGroupUser(HttpServletRequest request,
                                        @NotBlank String groupId,
                                        @NotBlank String selectContacts,
-                                       @NotBlank Integer opType) {
+                                       @NotNull Integer opType) {
         // 从请求头中获取token，封装到TokenUserInfoDto对象中
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
 

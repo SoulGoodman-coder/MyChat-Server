@@ -8,10 +8,12 @@ import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * projectName: com.mychat.controller
@@ -38,9 +40,9 @@ public class AdminUserInfoBeautyController extends BaseController{
     @GlobalInterceptor(checkAdmin = true)
     public Result loadBeautyAccountList(String userIdFuzzy, String emailFuzzy, Integer pageNumber, Integer pageSize){
 
-        List<UserInfoBeauty> userInfoList = userInfoBeautyService.loadBeautyAccountList(userIdFuzzy, emailFuzzy, pageNumber, pageSize);
+        Map<String, Object> userInfoMap = userInfoBeautyService.loadBeautyAccountList(userIdFuzzy, emailFuzzy, pageNumber, pageSize);
 
-        return Result.ok(userInfoList);
+        return Result.ok(userInfoMap);
     }
 
     /**
@@ -51,7 +53,7 @@ public class AdminUserInfoBeautyController extends BaseController{
     @PostMapping("saveBeautAccount")
     @GlobalInterceptor(checkAdmin = true)
     public Result saveBeautAccount(UserInfoBeauty userInfoBeauty){
-
+        System.out.println("userInfoBeauty = " + userInfoBeauty);
         userInfoBeautyService.saveBeautAccount(userInfoBeauty);
 
         return Result.ok(null);

@@ -25,11 +25,11 @@ public class SysSettingDto implements Serializable {
     // 群组最大成员数
     private Integer maxGroupMemberCount = 500;
     // 图片大小（MB）
-    private Integer maxImageSize = 10;
+    private Integer maxImageSize = 50;
     // 视频大小（MB）
-    private Integer maxVideoSize = 100;
+    private Integer maxVideoSize = 500;
     // 其他文件大小（MB）
-    private Integer maxFileSize = 10;
+    private Integer maxFileSize = 500;
     // 机器人uid
     private String robotUid = "Urobot";
     // 机器人昵称

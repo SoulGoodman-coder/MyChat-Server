@@ -64,6 +64,11 @@ public class AppUpdateController extends BaseController{
 
         AppUpdate appUpdate = appUpdateService.getLatestUpdate(tokenUserInfoDto.getUserId(), appVersion);
 
+        // 已经是最新版本
+        if(null == appUpdate){
+            return Result.ok(null);
+        }
+
         // 封装返回给前端的数据对象
         AppUpdateVo appUpdateVo = CopyUtils.copy(appUpdate, AppUpdateVo.class);
 

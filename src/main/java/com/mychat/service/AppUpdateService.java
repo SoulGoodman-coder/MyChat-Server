@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author Administrator
@@ -29,7 +30,7 @@ public interface AppUpdateService extends IService<AppUpdate> {
      * @param pageSize      页容量
      * @return List<AppUpdate>
      */
-    List<AppUpdate> loadUpdateList(String startDate, String endDate, Integer pageNumber, Integer pageSize);
+    Map<String, Object> loadUpdateList(String startDate, String endDate, Integer pageNumber, Integer pageSize);
 
     /**
      * 发布更新

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * projectName: com.mychat.controller
@@ -38,9 +39,9 @@ public class AdminGroupInfoController {
     @GlobalInterceptor(checkAdmin = true)
     public Result loadGroupList(String groupId, String groupNameFuzzy, String groupOwnerId, Integer pageNumber, Integer pageSize){
 
-        List<GroupInfo> groupInfoList = groupInfoService.loadGroupList(groupId, groupNameFuzzy, groupOwnerId, pageNumber, pageSize);
+        Map<String, Object> groupInfoMap = groupInfoService.loadGroupList(groupId, groupNameFuzzy, groupOwnerId, pageNumber, pageSize);
 
-        return Result.ok(groupInfoList);
+        return Result.ok(groupInfoMap);
     }
 
     /**

@@ -49,6 +49,10 @@ public class UserInfo implements Serializable {
     private Integer onlineType;
 
     public Integer getOnlineType() {
+        if (null == lastOffTime){
+            lastOffTime =  0L;
+        }
+
         if (null != lastLoginTime && lastLoginTime.getTime() > lastOffTime) {
             return UserOnlineStatusEnum.ONLINE.getStatus();
         }

@@ -14,7 +14,6 @@ import org.apache.ibatis.annotations.Param;
 */
 public interface UserInfoMapper extends BaseMapper<UserInfo> {
 
-    // TODO 在select中去除不需要的敏感信息 password等
     /**
      * 获取用户列表
      * @param page          IPage接口实现对象

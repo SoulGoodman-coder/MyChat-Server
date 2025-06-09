@@ -16,6 +16,7 @@ import com.mychat.service.ChatSessionUserService;
 import com.mychat.service.GroupInfoService;
 import com.mychat.service.UserContactService;
 import com.mychat.utils.CopyUtils;
+import com.mychat.utils.PageUtils;
 import com.mychat.utils.StringUtils;
 import com.mychat.utils.enums.*;
 import com.mychat.websocket.ChannelContextUtils;
@@ -31,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author Administrator
@@ -120,7 +122,7 @@ public class GroupInfoServiceImpl extends ServiceImpl<GroupInfoMapper, GroupInfo
 
             // 判断群头像参数是否为空
             if (null == avatarCover){
-                throw new BusinessException(ResultCodeEnum.CODE_600);
+                // throw new BusinessException(ResultCodeEnum.CODE_600);
             }
 
             // 补全参数
@@ -194,7 +196,7 @@ public class GroupInfoServiceImpl extends ServiceImpl<GroupInfoMapper, GroupInfo
             chatSessionUser.setMemberCount(1);
 
             MessageSendDto messageSendDto = CopyUtils.copy(chatMessage, MessageSendDto.class);
-            messageSendDto.setExtendDate(chatSessionUser);
+            messageSendDto.setExtendData(chatSessionUser);
             messageSendDto.setLastMessage(chatSessionUser.getLastMessage());
             channelContextUtils.sendMessage(messageSendDto);
         }else {                                             // 修改群聊
@@ -246,8 +248,9 @@ public class GroupInfoServiceImpl extends ServiceImpl<GroupInfoMapper, GroupInfo
     @Override
     public List<GroupInfo> loadMyGroup(String userId) {
         LambdaQueryWrapper<GroupInfo> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(GroupInfo::getGroupOwnerId, userId);
-        queryWrapper.orderByDesc(GroupInfo::getCreateTime);
+        queryWrapper.eq(GroupInfo::getGroupOwnerId, userId)
+                    .eq(GroupInfo::getStatus, GroupStatusEnum.NORMAL.getStatus())
+                    .orderByDesc(GroupInfo::getCreateTime);
 
         return groupInfoMapper.selectList(queryWrapper);
     }
@@ -314,10 +317,10 @@ public class GroupInfoServiceImpl extends ServiceImpl<GroupInfoMapper, GroupInfo
      * @param groupOwnerId   群主id
      * @param pageNumber     页码
      * @param pageSize       页容量
-     * @return List<GroupInfo>
+     * @return Map<String, Object>
      */
     @Override
-    public List<GroupInfo> loadGroupList(String groupId, String groupNameFuzzy, String groupOwnerId, Integer pageNumber, Integer pageSize) {
+    public Map<String, Object> loadGroupList(String groupId, String groupNameFuzzy, String groupOwnerId, Integer pageNumber, Integer pageSize) {
         // 判断页码参数是否合法
         if (null == pageNumber || pageNumber <= 0) {
             pageNumber = 1;
@@ -333,8 +336,10 @@ public class GroupInfoServiceImpl extends ServiceImpl<GroupInfoMapper, GroupInfo
         groupInfoMapper.loadGroupList(page, groupId, groupNameFuzzy, groupOwnerId);
 
         // 获取当前页数据
-        List<GroupInfo> records = page.getRecords();
-        return records;
+        // List<GroupInfo> records = page.getRecords();
+        // 封装分页数据
+        Map<String, Object> pageResultData = PageUtils.getPageResultData(page);
+        return pageResultData;
     }
 
     /**
@@ -414,8 +419,10 @@ public class GroupInfoServiceImpl extends ServiceImpl<GroupInfoMapper, GroupInfo
     @Override
     public void addOrRemoveGroupUser(TokenUserInfoDto tokenUserInfoDto, String groupId, String selectContacts, Integer opType) {
         // 参数校验
-        GroupInfo groupInfo = groupInfoMapper.selectById(tokenUserInfoDto.getUserId());
+        GroupInfo groupInfo = groupInfoMapper.selectById(groupId);
         if (null == groupInfo || !groupInfo.getGroupOwnerId().equals(tokenUserInfoDto.getUserId())) {
+            System.out.println(groupInfo);
+            System.out.println(tokenUserInfoDto.getUserId());
             throw new BusinessException(ResultCodeEnum.CODE_600);
         }
 
@@ -492,7 +499,7 @@ public class GroupInfoServiceImpl extends ServiceImpl<GroupInfoMapper, GroupInfo
         Long memberCount = userContactMapper.selectCount(queryWrapper);
         MessageSendDto messageSendDto = CopyUtils.copy(chatMessage, MessageSendDto.class);
         messageSendDto.setMemberCount(memberCount.intValue());
-        messageSendDto.setExtendDate(userId);
+        messageSendDto.setExtendData(userId);
         messageHandler.sendMessage(messageSendDto);
     }
 }

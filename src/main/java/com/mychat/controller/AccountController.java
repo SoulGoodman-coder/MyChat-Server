@@ -53,7 +53,7 @@ public class AccountController {
     // 获取验证码
     @PostMapping("checkCode")
     public Result checkCode() {
-        SpecCaptcha specCaptcha = new SpecCaptcha(100, 43);
+        SpecCaptcha specCaptcha = new SpecCaptcha(100, 43, 4);
         String checkCode = specCaptcha.text();   // 验证码值
         String checkCodeBase64 = specCaptcha.toBase64();    // 验证码图片base64
         String checkCodeKey = UUID.randomUUID().toString();     // 为当前验证码生成一个uuid用作标识

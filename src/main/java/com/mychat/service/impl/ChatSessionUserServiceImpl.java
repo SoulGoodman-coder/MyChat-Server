@@ -79,7 +79,7 @@ public class ChatSessionUserServiceImpl extends ServiceImpl<ChatSessionUserMappe
             messageSendDto.setContactId(contactId);
             messageSendDto.setContactType(UserContactTypeEnum.GROUP.getType());
             messageSendDto.setMessageType(MessageTypeEnum.CONTACT_NAME_UPDATE.getType());
-            messageSendDto.setExtendDate(contactName);
+            messageSendDto.setExtendData(contactName);
             messageHandler.sendMessage(messageSendDto);
         }else {
             System.out.println("3333333333333333333333333333333333333333");
@@ -95,7 +95,7 @@ public class ChatSessionUserServiceImpl extends ServiceImpl<ChatSessionUserMappe
                 messageSendDto.setContactId(userContact.getUserId());
                 messageSendDto.setContactType(UserContactTypeEnum.USER.getType());
                 messageSendDto.setMessageType(MessageTypeEnum.CONTACT_NAME_UPDATE.getType());
-                messageSendDto.setExtendDate(contactName);
+                messageSendDto.setExtendData(contactName);
                 messageSendDto.setSendUserId(contactId);
                 messageSendDto.setSendUserNickName(contactName);
                 messageHandler.sendMessage(messageSendDto);

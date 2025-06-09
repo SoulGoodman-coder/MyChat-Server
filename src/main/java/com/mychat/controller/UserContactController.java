@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * projectName: com.mychat.controller
@@ -87,9 +88,9 @@ public class UserContactController extends BaseController{
 
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(request);
 
-        List<UserContactApply> userContactApplyList = userContactApplyService.loadApply(tokenUserInfoDto.getUserId(), pageNumber, pageSize);
+        Map<String, Object> userContactApplyMap = userContactApplyService.loadApply(tokenUserInfoDto.getUserId(), pageNumber, pageSize);
 
-        return Result.ok(userContactApplyList);
+        return Result.ok(userContactApplyMap);
     }
 
     /**
