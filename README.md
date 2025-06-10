@@ -7,7 +7,7 @@
 
 MyChat是一个基于Java技术栈的仿微信实时聊天通信系统，提供单聊、群聊、消息推送、媒体文件发送下载查看等核心功能。
 
-- **Web端**: [MyChat-Client](https://github.com/SoulGoodman-coder/MyChat-Client) (Electron/Vue实现)
+- **客户端**: [MyChat-Client](https://github.com/SoulGoodman-coder/MyChat-Client) (Electron/Vue实现)
 
 ## 技术栈
 
