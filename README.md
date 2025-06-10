@@ -12,7 +12,7 @@ MyChat是一个基于Java技术栈的仿微信实时聊天通信系统，提供�
 ## 技术栈
 
 - **后端框架**: Spring Boot 3.x
-- **网络通信**: Netty 4.x (TCP长连接)
+- **网络通信**: Netty 4.x (WebSocket)
 - **ORM框架**: MyBatis-Plus 3.5.x
 - **数据库**: MySQL 8.0 + Redis 7.0
 - **认证授权**: Token
